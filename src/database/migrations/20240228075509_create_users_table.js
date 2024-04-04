@@ -7,6 +7,7 @@ exports.up = function (knex) {
     table.string("phone", 50).notNullable();
     table.integer("role_id").notNullable();
     table.string("avatar", 255);
+    table.string("service", 50).defaultTo("vip4");
     table.foreign("role_id").references("role_id").inTable("roles");
   });
 };
