@@ -6,11 +6,11 @@ const save = async (
   card_type,
   bank_code,
   transaction_info,
-  transaction_code,
+  transaction_code
 ) => {
   await knex("transactions").insert({
     user_id: user_id,
-    amount: amount,
+    amount: amount / 100,
     card_type: card_type,
     bank_code: bank_code,
     transaction_code: transaction_code,
@@ -18,7 +18,7 @@ const save = async (
   });
 };
 
-const retrieveAllbyUserId = async (user_id) => {
+const retrieveAllByUser = async (user_id) => {
   try {
     const transactions = await knex("transactions")
       .where("user_id", user_id)
@@ -32,5 +32,5 @@ const retrieveAllbyUserId = async (user_id) => {
 
 module.exports = {
   save,
-  retrieveAllbyUserId,
+  retrieveAllByUser,
 };

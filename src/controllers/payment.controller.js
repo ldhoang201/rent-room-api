@@ -78,28 +78,12 @@ function sortObject(obj) {
 
 const vnpay_return = async (req, res, next) => {
   try {
-    const {
-      user_id,
-      vnp_Amount,
-      vnp_BankCode,
-      vnp_CardType,
-      vnp_OrderInfo,
-      vnp_ResponseCode,
-    } = req.body;
+    const payload = req.body;
 
-    await save(
-      user_id,
-      vnp_Amount,
-      vnp_CardType,
-      vnp_BankCode,
-      vnp_OrderInfo,
-      vnp_ResponseCode
-    );
+    await save(payload);
 
-    console.log(typeof vnp_ResponseCode);
-
-    if (vnp_ResponseCode === "00") {
-      await updateBalance(user_id, vnp_Amount);
+    if (payload.vnp_ResponseCode === "00") {
+      await updateBalance(payload.user_id, payload.vnp_Amount);
     }
 
     res.status(200).json({

@@ -68,7 +68,26 @@ const updateEmail = async (userId, email) => {
   }
 };
 
-async function updateBalance(userId, amountToAdd) {
+const updateService = async (
+  userId,
+  amountToSub,
+  service_id,
+  service_expiry_date
+) => {
+  try {
+    await Promise.all([
+      knex("users").where({ user_id: userId }).update({
+        service_id: service_id,
+        service_expiry_date: service_expiry_date,
+      }),
+      updateBalance(userId, -amountToSub),
+    ]);
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateBalance = async (userId, amountToUpdate) => {
   try {
     const currentUserBalance = await knex("users")
       .select("balance")
@@ -80,7 +99,7 @@ async function updateBalance(userId, amountToAdd) {
     }
 
     const currentBalance = currentUserBalance.balance;
-    const newBalance = currentBalance + amountToAdd;
+    const newBalance = currentBalance + amountToUpdate;
 
     await knex("users")
       .where("user_id", userId)
@@ -90,7 +109,7 @@ async function updateBalance(userId, amountToAdd) {
   } catch (error) {
     throw error;
   }
-}
+};
 
 const save = async (userData) => {
   try {
@@ -117,5 +136,6 @@ module.exports.updateEmail = updateEmail;
 module.exports.updatePassword = updatePassword;
 module.exports.update = update;
 module.exports.updateBalance = updateBalance;
+module.exports.updateService = updateService;
 module.exports.save = save;
 module.exports.remove = remove;

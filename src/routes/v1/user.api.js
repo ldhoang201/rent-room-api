@@ -7,6 +7,7 @@ const {
   updateUserPassword,
   saveUser,
   deleteUser,
+  updateUserService,
 } = require("../../controllers/users.controler");
 
 // const { verifyToken } = require("../../middlewares/validateToken");
@@ -16,6 +17,7 @@ router.get("/users/:id", getUserById);
 router.post("/users/", saveUser);
 router.put("/users/:id", updateUser);
 router.put("/users/:id/password", updateUserPassword);
+router.put("/users/:id/service", updateUserService);
 router.delete("/users/:id", deleteUser);
 
 module.exports = router;

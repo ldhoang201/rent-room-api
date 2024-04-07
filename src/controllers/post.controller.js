@@ -46,12 +46,13 @@ const getPostByUser = async (req, res) => {
 
 const getPostByCriteria = async (req, res) => {
   try {
-    const { min_price, max_price, min_area, max_area,location_codes,room_type_id } = req.body;
-    const criteria = { min_price, max_price, min_area, max_area,location_codes ,room_type_id };
-    const posts = await postSevice.retrieveByCriteria(criteria);
+    const payload = req.body;
+
+    const posts = await postSevice.retrieveByCriteria(payload);
+
     res.json(posts);
   } catch (error) {
-    res.status(500).json({ error });
+    res.status(500).json({ error: error.message });
   }
 };
 

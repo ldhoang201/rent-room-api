@@ -124,16 +124,25 @@ const retrieveLatest = async () => {
 
 const retrieveByCriteria = async (criteria) => {
   try {
+    console.log(criteria);
     const allPosts = await retrievePosts();
     const images = await roomImageService.retrieveAll();
     const roomIds = await roomService.retrieveByCriteria(criteria);
-    const posts = allPosts.filter((post) => {
-      return roomIds.includes(post.room_id);
-    });
-    posts.forEach((post) => {
-      post.images = images.find((img) => img.post_id === post.post_id).images;
-    });
-    return posts;
+    const filteredPosts = allPosts
+      .filter((post) => roomIds.includes(post.room_id))
+      .filter(
+        (post) =>
+          !criteria.post_type_id || post.post_type_id == criteria.post_type_id
+      )
+      .map((post) => {
+        const postImages = images.find((img) => img.post_id === post.post_id);
+        return {
+          ...post,
+          images: postImages ? postImages.images : [],
+        };
+      });
+
+    return filteredPosts;
   } catch (error) {
     throw error;
   }

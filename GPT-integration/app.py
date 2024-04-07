@@ -1,7 +1,7 @@
 import openai
 
 def ask(text) :
-    openai.api_key = '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'
+    openai.api_key = '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'
     response = openai.Completion.create(model="gpt-3.5-turbo-instruct",
                                           prompt=text,
                                           max_tokens=150)

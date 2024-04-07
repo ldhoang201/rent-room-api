@@ -6,6 +6,7 @@ const {
   save,
   remove,
   retrieveBalance,
+  updateService,
 } = require("../services/user.service");
 
 const getAllUser = async (req, res) => {
@@ -45,10 +46,22 @@ const updateUser = async (req, res) => {
 };
 
 const updateUserPassword = async (req, res) => {
-  const userId = req.params.id;
+  const { id } = req.params;
   const userData = req.body;
   try {
-    await updatePassword(userId, userData.password);
+    await updatePassword(id, userData.password);
+    res.json({ message: "User password updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+const updateUserService = async (req, res) => {
+  const { id } = req.params;
+  const { amount_to_sub, service_id, service_expiry_date } = req.body;
+  try {
+    await updateService(id, amount_to_sub, service_id, service_expiry_date);
     res.json({ message: "User password updated successfully" });
   } catch (error) {
     console.error(error);
@@ -97,4 +110,5 @@ module.exports = {
   deleteUser,
   updateUserPassword,
   getUserBalance,
+  updateUserService,
 };
