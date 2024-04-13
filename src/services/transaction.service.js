@@ -1,13 +1,14 @@
 const knex = require("../config/knex");
 
-const save = async (
-  user_id,
-  amount,
-  card_type,
-  bank_code,
-  transaction_info,
-  transaction_code
-) => {
+const save = async (payload) => {
+  let {
+    user_id,
+    amount,
+    card_type,
+    bank_code,
+    transaction_info,
+    transaction_code,
+  } = loadTransactionFromVNPObj(payload);
   await knex("transactions").insert({
     user_id: user_id,
     amount: amount / 100,
@@ -28,6 +29,17 @@ const retrieveAllByUser = async (user_id) => {
     console.error("Error retrieving transactions by user id:", error);
     throw error;
   }
+};
+
+const loadTransactionFromVNPObj = (vnpObj) => {
+  return {
+    user_id: vnpObj.user_id,
+    amount: vnpObj.vnp_Amount,
+    card_type: vnpObj.vnp_CardType,
+    bank_code: vnpObj.vnp_BankCode,
+    transaction_code: vnpObj.vnp_ResponseCode,
+    transaction_info: vnpObj.vnp_OrderInfo,
+  };
 };
 
 module.exports = {

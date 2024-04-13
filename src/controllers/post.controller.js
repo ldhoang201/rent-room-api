@@ -44,6 +44,18 @@ const getPostByUser = async (req, res) => {
   }
 };
 
+const updatePostApprovedStatus = async (req, res) => {
+  const { id } = req.params;
+  const { is_approved } = req.body;
+  try {
+    await postSevice.updateApprovedStatus(id, is_approved);
+    res.json({ message: "Post approved status updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 const getPostByCriteria = async (req, res) => {
   try {
     const payload = req.body;
@@ -59,6 +71,15 @@ const getPostByCriteria = async (req, res) => {
 const getLatestPost = async (req, res) => {
   try {
     const posts = await postSevice.retrieveLatest();
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+const getHottestPost = async (req, res) => {
+  try {
+    const posts = await postSevice.retrieveHottest();
     res.json(posts);
   } catch (error) {
     res.status(500).json({ error });
@@ -173,7 +194,9 @@ module.exports = {
   getPostTypeList,
   getPostByUser,
   getPostByCriteria,
+  updatePostApprovedStatus,
   getLatestPost,
+  getHottestPost,
   createPost,
   updatePost,
 };

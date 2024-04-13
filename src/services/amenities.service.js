@@ -7,11 +7,11 @@ const retrieveByPostId = async (postId) => {
         knex.raw("ARRAY_AGG(DISTINCT amenities.amenity_name) as amenities")
       )
       .leftJoin(
-        "rooms_amenities",
+        "room_amenities",
         "amenities.amenities_id",
-        "rooms_amenities.amenities_id"
+        "room_amenities.amenities_id"
       )
-      .leftJoin("posts", "rooms_amenities.room_id", "posts.room_id")
+      .leftJoin("posts", "room_amenities.room_id", "posts.room_id")
       .where("posts.post_id", postId)
       .groupBy("posts.post_id");
     return amenities[0].amenities;
@@ -39,11 +39,11 @@ const retrieveAll = async () => {
         knex.raw("ARRAY_AGG(DISTINCT amenities.amenity_name) as amenities")
       )
       .leftJoin(
-        "rooms_amenities",
+        "room_amenities",
         "amenities.amenities_id",
-        "rooms_amenities.amenities_id"
+        "room_amenities.amenities_id"
       )
-      .leftJoin("posts", "rooms_amenities.room_id", "posts.room_id")
+      .leftJoin("posts", "room_amenities.room_id", "posts.room_id")
       .groupBy("posts.post_id");
     return amenities[0];
   } catch (error) {
@@ -58,8 +58,8 @@ const retrieveAllType = async () => {
 
 const save = async (amenitiesIds, roomId) => {
   try {
-    await knex("rooms_amenities").del().where("room_id", roomId);
-    const result = await knex("rooms_amenities").insert(
+    await knex("room_amenities").del().where("room_id", roomId);
+    const result = await knex("room_amenities").insert(
       amenitiesIds.map((amenityId) => ({
         room_id: roomId,
         amenities_id: amenityId,

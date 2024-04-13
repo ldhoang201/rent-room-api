@@ -29,6 +29,30 @@ const retrieveByPost = async (userId, postId) => {
   });
   return vr[0];
 };
+const retrieveAllForLandlord = async (userId) => {
+  try {
+    const requests = await knex("viewing_requests")
+      .join("posts", "viewing_requests.post_id", "posts.post_id")
+      .join("users", "users.user_id", "viewing_requests.user_id")
+      .select("viewing_requests.*", "users.user_name")
+      .where("posts.user_id", userId);
+    return requests;
+  } catch (error) {
+    console.error("Error retrieving requests for landlord:", error);
+    throw error;
+  }
+};
+
+const approveRequest = async (requestId, type) => {
+  try {
+    console.log(type)
+    return await knex("viewing_requests")
+      .update("is_approved", type === "approved" ? true : false)
+      .where({ request_id: requestId });
+  } catch (error) {
+    throw error;
+  }
+};
 
 const update = async (requestId, newRequestDate, newTimeFrame) => {
   await knex("viewing_requests")
@@ -43,6 +67,8 @@ const remove = async (requestId) => {
 module.exports = {
   save,
   retrieveByPost,
+  retrieveAllForLandlord,
+  approveRequest,
   update,
   remove,
 };

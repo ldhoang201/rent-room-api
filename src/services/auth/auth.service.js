@@ -10,12 +10,16 @@ const login = async (email, password) => {
   try {
     const user = await userService.retrieveByCriteria("email", email);
     if (!user) {
-      return "User not found";
+      return "Not Found";
     }
 
     const passwordMatch = await bcrypt.compare(password, user.hashed_password);
     if (!passwordMatch) {
-      return "Invalid password or username";
+      return "Invalid";
+    }
+
+    if (user.is_blocked) {
+      return "Blocked";
     }
 
     const accessToken = generateToken(user, "1h");

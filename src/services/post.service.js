@@ -22,7 +22,8 @@ const retrievePosts = async () => {
         "room_detail.gender",
         "users.user_name",
         "users.avatar",
-        "users.phone"
+        "users.phone",
+        "users.service_id"
       )
       .modify(function (qb) {
         qb.leftJoin("room", "posts.room_id", "room.room_id")
@@ -41,13 +42,15 @@ const retrievePosts = async () => {
             "users.user_name",
             "users.avatar",
             "users.phone",
+            "users.service_id",
             "room.room_id",
             "post_type.post_type_name",
             "room_type.room_type_name",
             "room_detail.room_type_id",
             "posts.post_id",
             "posts.room_id"
-          );
+          )
+          .orderBy("users.service_id", "asc");
       });
     return posts;
   } catch (error) {
@@ -122,6 +125,44 @@ const retrieveLatest = async () => {
   }
 };
 
+const retrieveHottest = async () => {
+  try {
+    const posts = await knex("posts")
+      .select(
+        "posts.post_id",
+        "posts.user_id",
+        "posts.created_at",
+        "users.service_id",
+        "room.title",
+        "room.price"
+      )
+      .modify(function (qb) {
+        qb.leftJoin("room", "posts.room_id", "room.room_id")
+          .leftJoin("users", "posts.user_id", "users.user_id")
+          .orderBy("users.service_id", "asc")
+          .limit(3);
+      });
+    console.log(posts);
+    const images = await roomImageService.retrieveAll();
+    posts.forEach((post) => {
+      post.images = images.find((img) => img.post_id === post.post_id).images;
+    });
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateApprovedStatus = async (postId, isApproved) => {
+  try {
+    await knex("posts").where("post_id", postId).update({
+      is_approved: isApproved,
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 const retrieveByCriteria = async (criteria) => {
   try {
     console.log(criteria);
@@ -180,6 +221,8 @@ module.exports = {
   retrieveByUser,
   retrieveByCriteria,
   retrieveLatest,
+  retrieveHottest,
+  updateApprovedStatus,
   update,
   save,
   remove,

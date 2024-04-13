@@ -1,7 +1,9 @@
 const {
   save,
   update,
+  approveRequest,
   retrieveByPost,
+  retrieveAllForLandlord,
   remove,
 } = require("../services/viewing-request.service");
 
@@ -25,11 +27,25 @@ const getRequestByPost = async (req, res, next) => {
   }
 };
 
+const getAllRequestForLandlord = async (req, res, next) => {
+  try {
+    const { user_id } = req.body;
+    const response = await retrieveAllForLandlord(user_id);
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const updateRequest = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { newRequestDate, newTimeFrame } = req.body;
-    await update(id, newRequestDate, newTimeFrame);
+    const { newRequestDate, newTimeFrame, type } = req.body;
+    if (type) {
+      await approveRequest(id,type);
+    } else {
+      await update(id, newRequestDate, newTimeFrame);
+    }
     res.json({ success: true, message: "Request updated successfully" });
   } catch (error) {
     next(error);
@@ -51,4 +67,5 @@ module.exports = {
   getRequestByPost,
   updateRequest,
   deleteRequest,
+  getAllRequestForLandlord,
 };
