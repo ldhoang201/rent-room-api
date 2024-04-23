@@ -3,6 +3,7 @@ const roomService = require("../services/room.service");
 const amenitiesService = require("../services/amenities.service");
 const roomDetailService = require("../services/room-detail.service");
 const roomImageService = require("../services/room-image.service");
+const gptService = require("../services/gpt.service");
 const { v4: uuidv4 } = require("uuid");
 
 const getPostTypeList = async (req, res) => {
@@ -56,11 +57,35 @@ const updatePostApprovedStatus = async (req, res) => {
   }
 };
 
+const updatePostBlockedStatus = async (req, res) => {
+  const { id } = req.params;
+  const { is_blocked } = req.body;
+  try {
+    await postSevice.updateBlockedStatus(id, is_blocked);
+    res.json({ message: "Post blocked status updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 const getPostByCriteria = async (req, res) => {
   try {
     const payload = req.body;
 
     const posts = await postSevice.retrieveByCriteria(payload);
+
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getPostByArea = async (req, res) => {
+  try {
+    const { area_codes } = req.body;
+
+    const posts = await postSevice.retrieveByArea(area_codes);
 
     res.json(posts);
   } catch (error) {
@@ -80,6 +105,16 @@ const getLatestPost = async (req, res) => {
 const getHottestPost = async (req, res) => {
   try {
     const posts = await postSevice.retrieveHottest();
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+const getPostByQuery = async (req, res) => {
+  try {
+    const { query } = req.body;
+    const posts = await gptService.retrieveByUserQuery(query);
     res.json(posts);
   } catch (error) {
     res.status(500).json({ error });
@@ -195,8 +230,11 @@ module.exports = {
   getPostByUser,
   getPostByCriteria,
   updatePostApprovedStatus,
+  updatePostBlockedStatus,
   getLatestPost,
   getHottestPost,
+  getPostByQuery,
   createPost,
+  getPostByArea,
   updatePost,
 };

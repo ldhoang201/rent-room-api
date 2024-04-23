@@ -8,5 +8,6 @@ exports.up = function (knex) {
 exports.down = function (knex) {
   return knex.schema.table("posts", function (table) {
     table.dropColumn("is_blocked");
+    table.dropColumn("available");
   });
 };

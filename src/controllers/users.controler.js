@@ -134,7 +134,6 @@ const deleteUser = async (req, res) => {
 const getAllRoles = async (req, res) => {
   try {
     const roles = await roleService.retrieveAll();
-    console.log(roles);
     return res.status(200).json(roles);
   } catch (error) {
     console.error("Error fetching roles:", error);

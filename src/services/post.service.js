@@ -2,6 +2,9 @@ const knex = require("../config/knex");
 const amenitieService = require("../services/amenities.service");
 const roomImageService = require("../services/room-image.service");
 const roomService = require("../services/room.service");
+const userService = require("../services/user.service");
+const serviceService = require("../services/services.service");
+const moment = require("moment");
 
 const retrieveTypeList = () => {
   return knex.select("*").from("post_type");
@@ -142,7 +145,6 @@ const retrieveHottest = async () => {
           .orderBy("users.service_id", "asc")
           .limit(3);
       });
-    console.log(posts);
     const images = await roomImageService.retrieveAll();
     posts.forEach((post) => {
       post.images = images.find((img) => img.post_id === post.post_id).images;
@@ -155,9 +157,48 @@ const retrieveHottest = async () => {
 
 const updateApprovedStatus = async (postId, isApproved) => {
   try {
-    await knex("posts").where("post_id", postId).update({
-      is_approved: isApproved,
-    });
+    const post = await knex("posts").where("post_id", postId).first();
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    const service = await serviceService.retrieveById(
+      await userService.retrieveService(post.user_id)
+    );
+
+    if (isApproved) {
+      const periodParts = service.period.split(" ");
+      const duration = parseInt(periodParts[0]);
+      const unit = periodParts[1];
+      const expirationDate = moment().add(duration, unit);
+
+      await knex("posts")
+        .where("post_id", postId)
+        .update({ expired_in: expirationDate });
+    }
+
+    await knex("posts")
+      .where("post_id", postId)
+      .update({ is_approved: isApproved });
+
+    console.log("Post status updated successfully");
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateBlockedStatus = async (postId, isBlocked) => {
+  try {
+    const post = await knex("posts").where("post_id", postId).first();
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    await knex("posts")
+      .where("post_id", postId)
+      .update({ is_blocked: isBlocked });
+
+    console.log("Post status updated successfully");
   } catch (error) {
     throw error;
   }
@@ -165,11 +206,10 @@ const updateApprovedStatus = async (postId, isApproved) => {
 
 const retrieveByCriteria = async (criteria) => {
   try {
-    console.log(criteria);
     const allPosts = await retrievePosts();
     const images = await roomImageService.retrieveAll();
     const roomIds = await roomService.retrieveByCriteria(criteria);
-    const filteredPosts = allPosts
+    let filteredPosts = allPosts
       .filter((post) => roomIds.includes(post.room_id))
       .filter(
         (post) =>
@@ -183,7 +223,34 @@ const retrieveByCriteria = async (criteria) => {
         };
       });
 
+    if (criteria.sort_type && criteria.sort_type === "latest") {
+      filteredPosts.sort((a, b) =>
+        moment(b.created_at).diff(moment(a.created_at))
+      );
+    }
+
     return filteredPosts;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const retrieveByArea = async (areaCodes) => {
+  try {
+    const allPosts = await retrievePosts();
+    const images = await roomImageService.retrieveAll();
+    const roomIds = await roomService.retrieveByArea(areaCodes);
+    const filteredPosts = allPosts
+      .filter((post) => roomIds.includes(post.room_id))
+      .map((post) => {
+        const postImages = images.find((img) => img.post_id === post.post_id);
+        return {
+          ...post,
+          images: postImages ? postImages.images : [],
+        };
+      });
+
+    return roomIds.length > 0 ? filteredPosts : [];
   } catch (error) {
     throw error;
   }
@@ -222,7 +289,9 @@ module.exports = {
   retrieveByCriteria,
   retrieveLatest,
   retrieveHottest,
+  retrieveByArea,
   updateApprovedStatus,
+  updateBlockedStatus,
   update,
   save,
   remove,

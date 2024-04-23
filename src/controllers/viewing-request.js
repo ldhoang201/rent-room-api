@@ -9,8 +9,8 @@ const {
 
 const createRequest = async (req, res, next) => {
   try {
-    const { postId, userId, requestDate, timeFrame } = req.body;
-    await save(postId, userId, requestDate, timeFrame);
+    const { postId, userId, requestDate, timeFrame, note } = req.body;
+    await save(postId, userId, requestDate, timeFrame, note);
     res.json({ success: true, message: "Request saved successfully" });
   } catch (error) {
     next(error);
@@ -42,7 +42,7 @@ const updateRequest = async (req, res, next) => {
     const { id } = req.params;
     const { newRequestDate, newTimeFrame, type } = req.body;
     if (type) {
-      await approveRequest(id,type);
+      await approveRequest(id, type);
     } else {
       await update(id, newRequestDate, newTimeFrame);
     }

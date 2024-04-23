@@ -9,6 +9,20 @@ const retrieveAll = async () => {
   }
 };
 
+const retrieveById = async (serviceId) => {
+  try {
+    const service = await knex("services")
+      .where({
+        service_id: serviceId,
+      })
+      .first();
+    return service;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   retrieveAll,
+  retrieveById,
 };

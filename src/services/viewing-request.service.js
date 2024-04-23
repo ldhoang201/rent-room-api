@@ -1,6 +1,6 @@
 const knex = require("../config/knex");
 
-const save = async (postId, userId, requestDate, timeFrame) => {
+const save = async (postId, userId, requestDate, timeFrame, note) => {
   // const existingRequest = await checkExistingRequest(requestDate, timeFrame);
 
   // if (existingRequest) {
@@ -12,6 +12,7 @@ const save = async (postId, userId, requestDate, timeFrame) => {
     user_id: userId,
     request_date: requestDate,
     time_frame: timeFrame,
+    note: note,
   });
 };
 
@@ -45,7 +46,6 @@ const retrieveAllForLandlord = async (userId) => {
 
 const approveRequest = async (requestId, type) => {
   try {
-    console.log(type)
     return await knex("viewing_requests")
       .update("is_approved", type === "approved" ? true : false)
       .where({ request_id: requestId });

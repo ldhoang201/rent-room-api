@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const routes = require("./src/routes/index");
+const postJobs = require("./src/conjobs/post-task");
 require("dotenv").config();
 
 const app = express();
@@ -13,6 +14,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use("/api/v1", routes);
+
+postJobs.setExpiredJob();
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

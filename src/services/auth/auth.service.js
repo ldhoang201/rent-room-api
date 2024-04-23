@@ -27,8 +27,6 @@ const login = async (email, password) => {
     user.access_token = accessToken;
     user.refresh_token = refreshToken;
 
-    console.log(user);
-
     return { user };
   } catch (error) {
     throw error;
@@ -48,8 +46,6 @@ const signUp = async (userData) => {
     const refreshToken = generateToken(newUser, "7d");
     newUser.access_token = accessToken;
     newUser.refresh_token = refreshToken;
-
-    console.log(newUser);
 
     return { newUser };
   } catch (error) {
@@ -84,7 +80,6 @@ const refreshAccessToken = async (refreshToken) => {
     const decoded = jwt.verify(refreshToken, process.env.JWT_KEY);
     const userId = decoded.user.user_id;
     const user = await userService.retrieveByCriteria("user_id", userId);
-    console.log(user);
 
     const accessToken = generateToken(user, "1h");
 

@@ -48,8 +48,35 @@ const retrieveByCriteria = async (criteria) => {
       }
     }
 
-    if (criteria.room_type_id && criteria.room_type_id !== "all") {
-      query = query.where("room_detail.room_type_id", criteria.room_type_id);
+    if (criteria.room_type_name && criteria.room_type_name !== "all") {
+      query = query.where("room_type.room_type_name", criteria.room_type_name);
+    }
+
+    const filteredRooms = await query;
+
+    const roomIds = filteredRooms.map((room) => room.room_id);
+
+    return roomIds;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+const retrieveByArea = async (areaCodes) => {
+  try {
+    let query = knex("room")
+      .select("room.room_id")
+      .leftJoin("room_detail", "room.room_id", "room_detail.room_id")
+      .leftJoin(
+        "room_type",
+        "room_detail.room_type_id",
+        "room_type.room_type_id"
+      );
+
+    for (let i = 0; i < areaCodes.length; i++) {
+      const locationCode = areaCodes[i];
+      query = query.whereRaw(`location_codes[${i + 1}] = ?`, [locationCode]);
     }
 
     const filteredRooms = await query;
@@ -80,6 +107,7 @@ module.exports = {
   retrieveTypeList,
   retrieveById,
   retrieveByCriteria,
+  retrieveByArea,
   save,
   update,
   remove,

@@ -24,12 +24,10 @@ const retrieveAll = async () => {
     return users;
   } catch (error) {
     throw error;
-    s;
   }
 };
 
 const retrieveByCriteria = async (criteria, value) => {
-  console.log(criteria);
   try {
     const user = await knex("users")
       .where({ [criteria]: value })
@@ -59,6 +57,17 @@ const retrieveById = async (userId) => {
   }
 };
 
+const retrieveService = async (userId) => {
+  try {
+    const service = await knex("users")
+      .select("service_id")
+      .where("user_id", userId)
+      .first();
+    return service.service_id;
+  } catch (error) {
+    throw error;
+  }
+};
 const retrieveBalance = async (userId) => {
   try {
     const balances = await knex("users")
@@ -190,6 +199,7 @@ module.exports.updateEmail = updateEmail;
 module.exports.updatePassword = updatePassword;
 module.exports.update = update;
 module.exports.updateBalance = updateBalance;
+module.exports.retrieveService = retrieveService;
 module.exports.updateService = updateService;
 module.exports.updateBlockedStatus = updateBlockedStatus;
 module.exports.updateForAdmin = updateForAdmin;
