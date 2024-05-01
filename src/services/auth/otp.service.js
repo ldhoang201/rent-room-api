@@ -20,9 +20,9 @@ const sendOTP = async (email, otp) => {
     const mailOptions = {
       from: "rental_app@gmail.com",
       to: email,
-      subject: "Your One Time Password (OTP)",
-      text: `Your OTP is: ${otp}`,
-      html: `<p>Your OTP is: <strong>${otp}</strong></p>`,
+      subject: "Xác thực Email",
+      // text: `Your OTP is: ${otp}`,
+      html: `<p>Mã xác thực của bạn l�?: <strong>${otp}</strong></p>`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -38,6 +38,7 @@ const verifyOTP = (userOTP, receivedOTP) => {
     const timeDifference = (currentTime - receivedOTP.timestamp) / 1000;
 
     if (userOTP === receivedOTP.otp && timeDifference <= 60) {
+      console.log('true flag')
       return true;
     } else {
       return false;

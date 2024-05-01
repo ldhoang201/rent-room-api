@@ -38,6 +38,20 @@ const getUserById = async (req, res) => {
   }
 };
 
+const getUserByEmail = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await retrieveByCriteria("email", email);
+    if (!user) {
+      return res.json({ message: "User not found" });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 const updateUser = async (req, res) => {
   const userId = req.params.id;
   const userData = req.body;
@@ -152,5 +166,6 @@ module.exports = {
   getUserBalance,
   updateUserService,
   updateUserForAdmin,
+  getUserByEmail,
   getAllRoles,
 };

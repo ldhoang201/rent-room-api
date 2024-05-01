@@ -18,8 +18,11 @@ const vnpay_payment = (req, res, next) => {
 
   var date = new Date();
 
-  var createDate = dateFormat(date, "yyyymmddHHmmss");
-  var orderId = dateFormat(date, "HHmmss");
+  var newDate = new Date(date.getTime() + 30 * 60000);
+
+  var createDate = dateFormat(newDate, "yyyymmddHHmmss");
+  var orderId = dateFormat(newDate, "HHmmss");
+
   var amount = req.body.amount;
   var bankCode = req.body.bankCode;
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   getAllUser,
   getUserById,
+  getUserByEmail,
   updateUser,
   updateUserPassword,
   saveUser,
@@ -19,6 +20,7 @@ router.get("/users", getAllUser);
 router.get("/users/:id", getUserById);
 router.get("/users/roles/all", getAllRoles);
 router.post("/users/", saveUser);
+router.post("/users/by-email", getUserByEmail);
 router.put("/users/:id", updateUser);
 router.put("/users/:id/admin", updateUserForAdmin);
 router.put("/users/:id/password", updateUserPassword);

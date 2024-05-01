@@ -1,0 +1,127 @@
+Table users {
+  user_id INT [pk, increment]
+  user_name VARCHAR(50) [not null]
+  email VARCHAR(50) [not null]
+  hashed_password VARCHAR(255) [not null]
+  phone VARCHAR(50) [not null]
+  balance INT [not null]
+  avatar VARCHAR(255)
+  ?s_blocked boolean [default: false]
+  service_id INT [default: 4 ,ref: - services.service_id]
+  role_id INT [not null, ref: - roles.role_id]
+  service_expiry_date TIMESTAMP
+}
+
+Table posts {
+  post_id INT [pk, increment]
+  room_id INT [not null, ref: - room.room_id]
+  user_id INT [not null, ref: > users.user_id]
+  expired_in DATE [not null]
+  is_approved boolean [default: false]
+  is_block boolean [default: false]
+  available boolean [default: false]
+  post_type_id INT [not null, ref: - post_type.post_type_id]
+  created_at TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+}
+
+Table comments {
+  comment_id INT [pk, increment]
+  post_id INT [not null, ref: > posts.post_id]
+  user_id INT [not null, ref: > users.user_id]
+  content TEXT [not null]
+  rating FLOAT [not null]
+  created_at TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+}
+
+Table favorites {
+  favorite_id INT [pk, increment]
+  user_id INT [not null, ref: > users.user_id]
+  post_id INT [not null, ref: - posts.post_id]
+  created_at TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+}
+
+Table viewing_requests {
+  request_id INT [pk, increment]
+  post_id INT [not null, ref: - posts.post_id]
+  user_id INT [not null, ref: > users.user_id]
+  request_date DATE [not null]
+  created_at TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+}
+
+Table room {
+  room_id INT [pk, increment]
+  title VARCHAR(255) [not null]
+  description TEXT
+  price INT [not null]
+  location VARCHAR(255) [not null] //example location:'Ng? 178,Gi?i Ph?ng,Thanh Xu?n,H? N?i'
+  location_codes VARCHAR[]
+}
+
+Table room_type {
+  room_type_id INT [pk, increment]
+  post_type_name VARCHAR(50) [not null]
+}
+
+Table post_type {
+  post_type_id INT [pk, increment]
+  post_type_name VARCHAR(50) [not null]
+}
+
+Table roles {
+  role_id INT [pk, increment]
+  role_name VARCHAR(50) [not null]
+}
+
+Table room_detail {
+  room_detail_id INT [pk, increment]
+  room_id INT [not null, ref: - room.room_id]
+  room_type_id INT [not null, ref: - room_type.room_type_id]
+  capacity INT [not null]
+  area INT [not null]
+  gender VARCHAR(50) [not null] ['M','FM','All']
+}
+
+Table amenities {
+  amenities_id INT [pk, increment]
+  amenity_name VARCHAR(255) [not null] //amenity_name store in vietnamese
+}
+
+Table room_amenities {
+  room_amenities_id INT [pk, increment]
+  amenities_id INT [not null, ref: < amenities.amenity_id]
+  room_id INT [not null, ref: < room.room_id]
+}
+
+Table room_images {
+  room_images_id INT [pk, increment]
+  room_id INT [not null, ref: < room.room_id]
+  image_url VARCHAR(255) [not null]
+}
+
+Table services {
+  service_id INT [pk, increment] 
+  service_name VARCHAR [not null]
+  price_per_day INT [not null]
+  price_per_week INT [not null]
+  price_per_month INT [not null]
+  advantages TEXT
+  title_color VARCHAR
+  auto_approval boolean [default: false]
+  prominent_badge boolean [default: false]
+}
+
+Table transactions {
+  transaction_id INT [pk, increment] 
+  user_id INT [not null, ref: > users.user_id]
+  amount INT [not null]
+  card_type VARCHAR(100)
+  bank_code VARCHAR(100)
+  transaction_code VARCHAR(100)
+  transaction_info VARCHAR(255)
+  transaction_date TIMESTAMP [default: `now()`]
+}
+
+//Th?ng tin li?n h?:(Just the info not query)
+Supporter Naem:"Le Hoang"
+Phone:"123456789"
+Email:"lehoang@gmail.com"

@@ -2,8 +2,16 @@ const knex = require("../config/knex");
 
 const retrieveAll = async () => {
   try {
-    const services = await knex("services");
+    const services = await knex("services").orderBy("service_id");
     return services;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const update = async (serviceId, payload) => {
+  try {
+    await knex("services").where({ service_id: serviceId }).update(payload);
   } catch (error) {
     throw error;
   }
@@ -23,6 +31,7 @@ const retrieveById = async (serviceId) => {
 };
 
 module.exports = {
+  update,
   retrieveAll,
   retrieveById,
 };

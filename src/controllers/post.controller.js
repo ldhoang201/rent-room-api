@@ -128,7 +128,6 @@ const createPost = async (req, res) => {
       description,
       price,
       location,
-      available,
       room_type_id,
       capacity,
       area,
@@ -138,15 +137,14 @@ const createPost = async (req, res) => {
       gender,
       post_type_id,
       location_codes,
-      expired_in,
     } = req.body;
+    console.log(req.body);
     const post_id = uuidv4();
     const roomData = {
       title,
       description,
       price,
       location,
-      available,
       location_codes,
     };
     const room = await roomService.save(roomData);
@@ -155,7 +153,6 @@ const createPost = async (req, res) => {
       room_id: room.room_id,
       user_id,
       post_type_id,
-      expired_in,
     };
     const roomDetailData = {
       room_type_id,

@@ -4,6 +4,8 @@ const {
   refreshAccessToken,
 } = require("../../services/auth/auth.service");
 
+const { retrieveByCriteria } = require("../../services/user.service");
+
 const {
   verifyOTP,
   generateOTP,
@@ -28,7 +30,13 @@ const loginController = async (req, res, next) => {
 
 const sendOTPController = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { email, type_check } = req.body;
+    if (type_check === "register") {
+      let user = await retrieveByCriteria("email", email);
+      if (user) {
+        res.json({ message: "Email existed on another user!" });
+      }
+    }
     const genedOTP = generateOTP();
     await sendOTP(email, genedOTP.otp);
     res.json({ genedOTP });
@@ -59,6 +67,19 @@ const signUpController = async (req, res, next) => {
   }
 };
 
+const verifyOTPController = async (req, res, next) => {
+  try {
+    const { userOTP, genedOTP } = req.body;
+    const isOTPCorrect = verifyOTP(userOTP, genedOTP);
+    if (!isOTPCorrect) {
+      return res.json({ message: "OTP does not match" });
+    }
+    return res.json({ message: "OTP matched" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const refreshAccessTokenController = async (req, res, next) => {
   try {
     const { refresh_token } = req.body;
@@ -74,4 +95,5 @@ module.exports = {
   signUpController,
   refreshAccessTokenController,
   sendOTPController,
+  verifyOTPController,
 };
