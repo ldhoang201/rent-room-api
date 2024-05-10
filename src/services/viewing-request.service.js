@@ -35,7 +35,13 @@ const retrieveAllForLandlord = async (userId) => {
     const requests = await knex("viewing_requests")
       .join("posts", "viewing_requests.post_id", "posts.post_id")
       .join("users", "users.user_id", "viewing_requests.user_id")
-      .select("viewing_requests.*", "users.user_name")
+      .select(
+        "viewing_requests.*",
+        "users.user_name",
+        "users.phone",
+        "users.email",
+        "users.avatar"
+      )
       .where("posts.user_id", userId);
     return requests;
   } catch (error) {

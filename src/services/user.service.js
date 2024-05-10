@@ -14,13 +14,17 @@ const retrieveAll = async () => {
         "users.avatar",
         "users.balance",
         "users.is_blocked",
+        "users.created_at",
         "users.service_expiry_date",
         "roles.role_name",
         "services.service_name"
       )
       .leftJoin("roles", "users.role_id", "roles.role_id")
       .leftJoin("services", "services.service_id", "users.service_id")
-      .whereNot("role_name", "admin");
+      .whereNot("role_name", "admin")
+      .orderBy("users.service_id", "asc")
+      .orderBy("users.created_at", "desc");
+
     return users;
   } catch (error) {
     throw error;
@@ -137,6 +141,18 @@ const updateService = async (
   service_expiry_date
 ) => {
   try {
+    const service = await knex("services").where({ service_id }).first();
+
+    if (!service) {
+      throw new Error("Không tìm thấy dịch vụ");
+    }
+
+    const updatedNumPurchases = service.num_purchases + 1;
+
+    await knex("services")
+      .where({ service_id })
+      .update({ num_purchases: updatedNumPurchases });
+
     await Promise.all([
       knex("users").where({ user_id: userId }).update({
         service_id: service_id,
@@ -151,23 +167,39 @@ const updateService = async (
 
 const updateBalance = async (userId, amountToUpdate) => {
   try {
-    const currentUserBalance = await knex("users")
+    const currentUser = await knex("users")
       .select("balance")
       .where("user_id", userId)
       .first();
 
-    if (!currentUserBalance) {
+    if (!currentUser) {
       throw new Error("User not found");
     }
 
-    const currentBalance = currentUserBalance.balance;
+    const currentBalance = currentUser.balance;
     const newBalance = currentBalance + amountToUpdate;
 
     await knex("users")
       .where("user_id", userId)
       .update({ balance: newBalance });
 
-    return newBalance;
+    const admin = await knex("users")
+      .select("user_id", "balance")
+      .where("role_id", 1)
+      .first();
+
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+
+    const adminCurrentBalance = admin.balance;
+    const adminNewBalance = adminCurrentBalance + amountToUpdate;
+
+    await knex("users")
+      .where("user_id", admin.user_id)
+      .update({ balance: adminNewBalance });
+
+    return adminNewBalance;
   } catch (error) {
     throw error;
   }

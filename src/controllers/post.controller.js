@@ -136,9 +136,15 @@ const createPost = async (req, res) => {
       user_id,
       gender,
       post_type_id,
+      custom_amenities,
       location_codes,
     } = req.body;
-    console.log(req.body);
+    let customAmenityIds = [];
+    if (custom_amenities.length > 0) {
+      customAmenityIds = await amenitiesService.saveAmenities(custom_amenities);
+      customAmenityIds = customAmenityIds.map((obj) => obj.amenities_id);
+    }
+    const allAmenitiesIds = [...amenitiesIds, ...customAmenityIds];
     const post_id = uuidv4();
     const roomData = {
       title,
@@ -163,7 +169,7 @@ const createPost = async (req, res) => {
     };
     const promises = [
       roomDetailService.save(roomDetailData),
-      amenitiesService.save(amenitiesIds, room.room_id),
+      amenitiesService.save(allAmenitiesIds, room.room_id),
       roomImageService.save(imageUrls, room.room_id),
       postSevice.save(postData),
     ];
@@ -172,6 +178,16 @@ const createPost = async (req, res) => {
     res.json({ message: "Create success" });
   } catch (error) {
     res.json({ error });
+  }
+};
+
+const deletePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const posts = await postSevice.remove(id);
+    res.json({ message: "Delete success" });
+  } catch (error) {
+    res.status(500).json({ error });
   }
 };
 
@@ -190,9 +206,18 @@ const updatePost = async (req, res) => {
       imageUrls,
       user_id,
       post_type_id,
+      custom_amenities,
       gender,
       room_id,
     } = req.body;
+
+    let customAmenityIds = [];
+    if (custom_amenities.length > 0) {
+      customAmenityIds = await amenitiesService.saveAmenities(custom_amenities);
+      customAmenityIds = customAmenityIds.map((obj) => obj.amenities_id);
+    }
+
+    const allAmenitiesIds = [...amenitiesIds, ...customAmenityIds];
 
     const roomData = {
       room_id,
@@ -207,7 +232,7 @@ const updatePost = async (req, res) => {
     const promises = [
       roomService.update(roomData, room_id),
       roomDetailService.update(roomDetailData, room_id),
-      amenitiesService.save(amenitiesIds, room_id),
+      amenitiesService.save(allAmenitiesIds, room_id),
       roomImageService.save(imageUrls, room_id),
       postSevice.update(postData, id),
     ];
@@ -234,4 +259,5 @@ module.exports = {
   createPost,
   getPostByArea,
   updatePost,
+  deletePost,
 };

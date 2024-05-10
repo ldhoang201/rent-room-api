@@ -11,6 +11,7 @@ const {
   updateBlockedStatus,
   updateService,
 } = require("../services/user.service");
+const bcrypt = require("bcrypt");
 
 const roleService = require("../services/role.service");
 
@@ -126,7 +127,16 @@ const getUserBalance = async (req, res) => {
 const saveUser = async (req, res) => {
   const userData = req.body;
   try {
-    const userId = await save(userData);
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const newUser = {
+      avatar: userData.avatar,
+      user_name: userData.user_name,
+      email: userData.email,
+      phone: userData.phone,
+      hashed_password: hashedPassword,
+      role_id: userData.role_id,
+    };
+    const userId = await save(newUser);
     res.json({ message: "User saved successfully", userId });
   } catch (error) {
     console.error(error);

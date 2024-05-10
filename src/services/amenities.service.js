@@ -56,6 +56,18 @@ const retrieveAllType = async () => {
   return amenities;
 };
 
+const saveAmenities = async (amenities) => {
+  let amenity_ids = await Promise.all(
+    amenities.map(async (amenity) => {
+      let [amenity_id] = await knex("amenities")
+        .insert({ amenity_name: amenity.amenity_name })
+        .returning("amenities_id");
+      return amenity_id;
+    })
+  );
+  return amenity_ids;
+};
+
 const save = async (amenitiesIds, roomId) => {
   try {
     await knex("room_amenities").del().where("room_id", roomId);
@@ -76,5 +88,6 @@ module.exports = {
   retrieveAll,
   retrieveAllType,
   retrieveAmenityIds,
+  saveAmenities,
   save,
 };

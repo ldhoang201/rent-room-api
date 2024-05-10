@@ -22,6 +22,7 @@ const getAmenitiesIdsByName = async (req, res, next) => {
   }
 };
 
+
 module.exports = {
   getAllAmenities,
   getAmenitiesIdsByName,

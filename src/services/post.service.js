@@ -38,6 +38,10 @@ const retrievePosts = async () => {
             "room_detail.room_type_id",
             "room_type.room_type_id"
           )
+          // .where("posts.delete_flag", false)
+          // .where("posts.available", true)
+          // .where("posts.is_blocked", false)
+          // .where("posts.is_approved", true)
           .groupBy(
             "room_detail.area",
             "room_detail.capacity",
@@ -115,8 +119,12 @@ const retrieveLatest = async () => {
       )
       .modify(function (qb) {
         qb.leftJoin("room", "posts.room_id", "room.room_id")
+          // .where("posts.delete_flag", false)
+          // .where("posts.available", true)
+          // .where("posts.is_blocked", false)
+          // .where("posts.is_approved", true)
           .orderBy("posts.created_at", "desc")
-          .limit(3);
+          .limit(10);
       });
     const images = await roomImageService.retrieveAll();
     posts.forEach((post) => {
@@ -142,8 +150,12 @@ const retrieveHottest = async () => {
       .modify(function (qb) {
         qb.leftJoin("room", "posts.room_id", "room.room_id")
           .leftJoin("users", "posts.user_id", "users.user_id")
+          // .where("posts.delete_flag", false)
+          // .where("posts.available", true)
+          // .where("posts.is_blocked", false)
+          // .where("posts.is_approved", true)
           .orderBy("users.service_id", "asc")
-          .limit(3);
+          .limit(10);
       });
     const images = await roomImageService.retrieveAll();
     posts.forEach((post) => {
@@ -275,7 +287,9 @@ const update = async (updatedData, postId) => {
 
 const remove = async (postId) => {
   try {
-    await knex("posts").where("post_id", postId).del();
+    await knex("posts").where("post_id", postId).update({
+      delete_flag: true,
+    });
   } catch (error) {
     throw error;
   }

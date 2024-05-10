@@ -52,6 +52,10 @@ const retrieveByCriteria = async (criteria) => {
       query = query.where("room_type.room_type_name", criteria.room_type_name);
     }
 
+    if (criteria.gender && criteria.gender !== "") {
+      query = query.where("room_detail.gender", criteria.gender);
+    }
+
     const filteredRooms = await query;
 
     const roomIds = filteredRooms.map((room) => room.room_id);

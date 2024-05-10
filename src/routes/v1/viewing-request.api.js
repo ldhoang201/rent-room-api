@@ -6,12 +6,14 @@ const {
   createRequest,
   updateRequest,
   deleteRequest,
+  sendMailConfirmRequest,
 } = require("../../controllers/viewing-request");
 
 router.post("/view-request", createRequest);
+router.post("/view-request/send-confirm", sendMailConfirmRequest);
 router.post("/view-request/by-post", getRequestByPost);
+router.post("/view-request/for-landlord", getAllRequestForLandlord);
 router.put("/view-request/:id", updateRequest);
 router.put("/view-request/:id", updateRequest);
 router.delete("/view-request/:id", deleteRequest);
-router.post("/view-request/for-landlord", getAllRequestForLandlord);
 module.exports = router;

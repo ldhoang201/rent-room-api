@@ -13,6 +13,7 @@ const {
   createPost,
   updatePost,
   updatePostBlockedStatus,
+  deletePost,
 } = require("../../controllers/post.controller");
 
 const router = express.Router();
@@ -30,5 +31,6 @@ router.post("/posts/filter-by-area", getPostByArea);
 router.put("/posts/:id", updatePost);
 router.put("/posts/:id/approved", updatePostApprovedStatus);
 router.put("/posts/:id/blocked", updatePostBlockedStatus);
+router.delete("/posts/:id", deletePost);
 
 module.exports = router;

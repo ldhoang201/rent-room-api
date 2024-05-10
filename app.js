@@ -6,7 +6,7 @@ const appJobs = require("./src/conjobs/appJobs");
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.APP_LOCAL_PORT;
+const PORT = process.env.PORT || process.env.APP_LOCAL_PORT;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

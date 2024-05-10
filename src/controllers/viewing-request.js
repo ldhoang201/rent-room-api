@@ -7,11 +7,24 @@ const {
   remove,
 } = require("../services/viewing-request.service");
 
+const { sendViewRequestConfirm } = require("../services/auth/otp.service");
+
 const createRequest = async (req, res, next) => {
   try {
     const { postId, userId, requestDate, timeFrame, note } = req.body;
     await save(postId, userId, requestDate, timeFrame, note);
     res.json({ success: true, message: "Request saved successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const sendMailConfirmRequest = async (req, res, next) => {
+  try {
+    const { postId, email, requestDate, timeFrame, note } = req.body;
+    let payload = { postId, requestDate, timeFrame, note };
+    await sendViewRequestConfirm(email, payload);
+    res.json({ success: true, message: "Request sent successfully" });
   } catch (error) {
     next(error);
   }
@@ -40,11 +53,11 @@ const getAllRequestForLandlord = async (req, res, next) => {
 const updateRequest = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { newRequestDate, newTimeFrame, type } = req.body;
+    const { requestDate, timeFrame, type } = req.body;
     if (type) {
       await approveRequest(id, type);
     } else {
-      await update(id, newRequestDate, newTimeFrame);
+      await update(id, requestDate, timeFrame);
     }
     res.json({ success: true, message: "Request updated successfully" });
   } catch (error) {
@@ -68,4 +81,5 @@ module.exports = {
   updateRequest,
   deleteRequest,
   getAllRequestForLandlord,
+  sendMailConfirmRequest,
 };
