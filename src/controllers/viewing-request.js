@@ -7,7 +7,10 @@ const {
   remove,
 } = require("../services/viewing-request.service");
 
-const { sendViewRequestConfirm } = require("../services/auth/otp.service");
+const {
+  sendViewRequestConfirm,
+  sendAcceptedRequest,
+} = require("../services/auth/otp.service");
 
 const createRequest = async (req, res, next) => {
   try {
@@ -24,6 +27,17 @@ const sendMailConfirmRequest = async (req, res, next) => {
     const { postId, email, requestDate, timeFrame, note } = req.body;
     let payload = { postId, requestDate, timeFrame, note };
     await sendViewRequestConfirm(email, payload);
+    res.json({ success: true, message: "Request sent successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const sendMailAcceptedRequest = async (req, res, next) => {
+  try {
+    const { postId, email, requestDate, timeFrame, note } = req.body;
+    let payload = { postId, requestDate, timeFrame, note };
+    await sendAcceptedRequest(email, payload);
     res.json({ success: true, message: "Request sent successfully" });
   } catch (error) {
     next(error);
@@ -82,4 +96,5 @@ module.exports = {
   deleteRequest,
   getAllRequestForLandlord,
   sendMailConfirmRequest,
+  sendMailAcceptedRequest,
 };

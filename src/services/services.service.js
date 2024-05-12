@@ -30,8 +30,23 @@ const retrieveById = async (serviceId) => {
   }
 };
 
+const retrieveServiceNameById = async (serviceId) => {
+  try {
+    const service = await knex("services")
+      .select("service_name")
+      .where({
+        service_id: serviceId,
+      })
+      .first();
+    return service;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   update,
   retrieveAll,
   retrieveById,
+  retrieveServiceNameById,
 };

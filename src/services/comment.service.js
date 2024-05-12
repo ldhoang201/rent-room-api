@@ -14,7 +14,8 @@ async function retrieveByPostId(postId) {
     const comments = await knex("comments")
       .select("comments.*", "users.user_name", "users.avatar")
       .leftJoin("users", "users.user_id", "comments.user_id")
-      .where("comments.post_id", postId);
+      .where("comments.post_id", postId)
+      .orderBy("comments.created_at","desc");
     return comments;
   } catch (error) {
     throw error;

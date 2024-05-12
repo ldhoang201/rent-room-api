@@ -7,10 +7,12 @@ const {
   updateRequest,
   deleteRequest,
   sendMailConfirmRequest,
+  sendMailAcceptedRequest,
 } = require("../../controllers/viewing-request");
 
 router.post("/view-request", createRequest);
 router.post("/view-request/send-confirm", sendMailConfirmRequest);
+router.post("/view-request/send-accepted", sendMailAcceptedRequest);
 router.post("/view-request/by-post", getRequestByPost);
 router.post("/view-request/for-landlord", getAllRequestForLandlord);
 router.put("/view-request/:id", updateRequest);

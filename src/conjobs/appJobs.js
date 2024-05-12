@@ -14,7 +14,6 @@ const updateExpiredPosts = async () => {
       )
       .update({ available: false });
 
-    console.log("Expired posts updated successfully!");
   } catch (error) {
     console.error("Error updating expired posts:", error);
   }

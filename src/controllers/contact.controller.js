@@ -2,7 +2,6 @@ const { save, retrieveAll } = require("../services/contact.service");
 
 const createContact = async (req, res) => {
   const { fullName, email, phone, message } = req.body;
-  console.log(req.body);
   try {
     await save(fullName, email, phone, message);
     res

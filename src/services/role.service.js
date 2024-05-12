@@ -4,4 +4,11 @@ const retrieveAll = () => {
   return knex.select("*").from("roles").whereNot("role_name", "admin");
 };
 
-module.exports.retrieveAll = retrieveAll;
+const retrieveNameById = (role_id) => {
+  return knex.select("role_name").from("roles").where({ role_id });
+};
+
+module.exports = {
+  retrieveAll,
+  retrieveNameById,
+};

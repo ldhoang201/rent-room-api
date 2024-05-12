@@ -3,7 +3,7 @@ const {
   getTransactionsByUser,
   getRevenueByDateRange,
   getTransactionsInRange,
-} = require("../../controllers/transaction");
+} = require("../../controllers/transaction.controller");
 
 const router = express.Router();
 

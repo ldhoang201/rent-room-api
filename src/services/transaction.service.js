@@ -43,13 +43,19 @@ const loadTransactionFromVNPObj = (vnpObj) => {
   };
 };
 
-const retrieveInRange = async (startDate, endDate) => {
+const retrieveInRange = async (startDate, endDate, userId = null) => {
   try {
-    const transactions = await knex("transactions")
+    let query = knex("transactions")
       .select("transactions.*", "users.user_name", "users.avatar")
       .join("users", "transactions.user_id", "users.user_id")
       .whereBetween("transaction_date", [startDate, endDate]);
-    return transactions;
+
+    if (userId) {
+      query = query.where("users.user_id", userId);
+    }
+
+    const result = await query;
+    return result;
   } catch (error) {
     throw error;
   }

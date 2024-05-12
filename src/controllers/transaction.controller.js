@@ -17,8 +17,13 @@ const getTransactionsByUser = async (req, res) => {
 
 const getTransactionsInRange = async (req, res) => {
   try {
-    const { startDate, endDate } = req.body;
-    const transactions = await retrieveInRange(startDate, endDate);
+    const { startDate, endDate, userId } = req.body;
+    let transactions = await retrieveInRange(startDate, endDate);
+    if (userId !== "all") {
+      transactions = await retrieveInRange(startDate, endDate, userId);
+    } else {
+      transactions = await retrieveInRange(startDate, endDate);
+    }
     return res.status(200).json(transactions);
   } catch (error) {
     console.error("Error fetching transactions:", error);

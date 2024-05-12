@@ -16,7 +16,11 @@ const {
   deletePost,
 } = require("../../controllers/post.controller");
 
+const { verifyToken } = require("../../middlewares/validateToken");
+
 const router = express.Router();
+
+// router.use(verifyToken);
 
 router.get("/posts", getAllPost);
 router.get("/posts/:id", getPostById);
