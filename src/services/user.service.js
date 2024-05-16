@@ -188,12 +188,16 @@ const updateBalance = async (userId, amountToUpdate) => {
       .where("role_id", 1)
       .first();
 
+      console.log(admin)
+
     if (!admin) {
       throw new Error("Admin not found");
     }
 
     const adminCurrentBalance = admin.balance;
     const adminNewBalance = adminCurrentBalance + amountToUpdate;
+    console.log(amountToUpdate);
+    console.log(adminNewBalance);
 
     await knex("users")
       .where("user_id", admin.user_id)

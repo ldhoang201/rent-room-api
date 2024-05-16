@@ -1,4 +1,5 @@
 const { save, retrieveAll } = require("../services/contact.service");
+const knex = require("../config/knex");
 
 const createContact = async (req, res) => {
   const { fullName, email, phone, message } = req.body;
@@ -14,6 +15,7 @@ const createContact = async (req, res) => {
 
 const getAllContacts = async (req, res) => {
   try {
+    console.log("mounted api");
     const contacts = await retrieveAll();
     res.status(200).json({ success: true, contacts });
   } catch (error) {

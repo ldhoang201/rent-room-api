@@ -13,7 +13,6 @@ const updateExpiredPosts = async () => {
         expiredPosts.map((post) => post.post_id)
       )
       .update({ available: false });
-
   } catch (error) {
     console.error("Error updating expired posts:", error);
   }
@@ -42,7 +41,7 @@ module.exports.setExpiredJob = () => {
   cron.getTasks().clear();
   cron.schedule("0 22 * * *", async () => {
     try {
-      await Promise.all(updateExpiredPosts(), updateExpiredUserServices());
+      await Promise.all([updateExpiredPosts(), updateExpiredUserServices()]);
 
       console.log("Cron job ran successfully!");
     } catch (error) {

@@ -48,7 +48,8 @@ const retrieveInRange = async (startDate, endDate, userId = null) => {
     let query = knex("transactions")
       .select("transactions.*", "users.user_name", "users.avatar")
       .join("users", "transactions.user_id", "users.user_id")
-      .whereBetween("transaction_date", [startDate, endDate]);
+      .whereBetween("transaction_date", [startDate, endDate])
+      .orderBy("transactions.transaction_date", "desc");
 
     if (userId) {
       query = query.where("users.user_id", userId);

@@ -10,7 +10,7 @@ Table users {
   service_id INT [default: 4 ,ref: - services.service_id]
   role_id INT [not null, ref: - roles.role_id]
   service_expiry_date TIMESTAMP
-}
+}Điều hòa
 
 Table posts {
   post_id INT [pk, increment]
@@ -83,7 +83,7 @@ Table room_detail {
 
 Table amenities {
   amenities_id INT [pk, increment]
-  amenity_name VARCHAR(255) [not null] //amenity_name store in vietnamese
+  amenity_name VARCHAR(255) [not null] //amenity_name store in vietnamese,the first character is capitalized
 }
 
 Table room_amenities {

@@ -6,6 +6,7 @@ const fs = require("fs");
 const { G4F } = require("g4f");
 
 const retrieveByUserQuery = async (query) => {
+  console.log(query);
   try {
     if (!query.includes("room_id")) {
       return [];
@@ -75,7 +76,7 @@ const handleChat = async (message) => {
       ];
     } else {
       messages = [
-        { role: "user", content: "Trả lời bằng tiếng việt" },
+        { role: "user", content: "Trả lời ngắn gọn" },
         { role: "user", content: message },
       ];
     }

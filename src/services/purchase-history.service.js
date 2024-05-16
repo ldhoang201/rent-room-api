@@ -15,8 +15,8 @@ const retrieveByUser = async (userId) => {
     const purchaseHistory = await knex
       .select("service_id", "purchase_date", "service_expiry_date")
       .from("purchase_history")
-      .where({ user_id: userId });
-
+      .where({ user_id: userId })
+      .orderBy("purchase_date", "desc");
     const result = await Promise.all(
       purchaseHistory.map(async (row) => {
         const serviceName = await retrieveServiceNameById(row.service_id);

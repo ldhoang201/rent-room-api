@@ -18,7 +18,8 @@ const retrieveAll = async () => {
     const contacts = await knex("contact").select("*");
     return contacts;
   } catch (error) {
-    throw error;
+    console.error("Error retrieving contacts:", error);
+    throw new Error(error);
   }
 };
 
