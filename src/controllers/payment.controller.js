@@ -1,93 +1,63 @@
 const { save } = require("../services/transaction.service");
 const { updateBalance } = require("../services/user.service");
+const PayOS = require("@payos/node");
+const payosConfig = require("../config/payos");
 
-const vnpay_payment = (req, res, next) => {
-  var ipAddr =
-    req.headers["x-forwarded-for"] ||
-    req.connection.remoteAddress ||
-    req.socket.remoteAddress ||
-    req.connection.socket.remoteAddress;
+const payos = new PayOS(
+  payosConfig.client_id,
+  payosConfig.api_key_payos,
+  payosConfig.check_sum
+);
 
-  var config = require("../config/vnpay");
-  var dateFormat = require("dateformat");
-
-  var tmnCode = config.vnp_TmnCode;
-  var secretKey = config.vnp_HashSecret;
-  var vnpUrl = config.vnp_Url;
-  var returnUrl = config.vnp_ReturnUrl;
-
-  var date = new Date();
-
-  var newDate = new Date(date.getTime() + 30 * 60000);
-
-  var createDate = dateFormat(newDate, "yyyymmddHHmmss");
-  var orderId = dateFormat(newDate, "HHmmss");
-
-  var amount = req.body.amount;
-  var bankCode = req.body.bankCode;
-
-  var orderInfo = req.body.orderDescription;
-  var orderType = req.body.orderType;
-  var locale = req.body.language;
-  if (locale === null || locale === "") {
-    locale = "vn";
-  }
-  var currCode = "VND";
-  var vnp_Params = {};
-  vnp_Params["vnp_Version"] = "2.1.0";
-  vnp_Params["vnp_Command"] = "pay";
-  vnp_Params["vnp_TmnCode"] = tmnCode;
-  // vnp_Params['vnp_Merchant'] = ''
-  vnp_Params["vnp_Locale"] = locale;
-  vnp_Params["vnp_CurrCode"] = currCode;
-  vnp_Params["vnp_TxnRef"] = orderId;
-  vnp_Params["vnp_OrderInfo"] = orderInfo;
-  vnp_Params["vnp_OrderType"] = orderType;
-  vnp_Params["vnp_Amount"] = amount * 100;
-  vnp_Params["vnp_ReturnUrl"] = returnUrl;
-  vnp_Params["vnp_IpAddr"] = ipAddr;
-  vnp_Params["vnp_CreateDate"] = createDate;
-  if (bankCode !== null && bankCode !== "") {
-    vnp_Params["vnp_BankCode"] = bankCode;
-  }
-
-  vnp_Params = sortObject(vnp_Params);
-
-  var querystring = require("qs");
-  var signData = querystring.stringify(vnp_Params, { encode: false });
-  var crypto = require("crypto");
-  var hmac = crypto.createHmac("sha512", secretKey);
-  var signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
-  vnp_Params["vnp_SecureHash"] = signed;
-  vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false });
-  res.json(vnpUrl);
-};
-
-function sortObject(obj) {
-  let sorted = {};
-  let str = [];
-  let key;
-  for (key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      str.push(encodeURIComponent(key));
-    }
-  }
-  str.sort();
-  for (key = 0; key < str.length; key++) {
-    sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
-  }
-  return sorted;
+function getRandomOrderCode(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const vnpay_return = async (req, res, next) => {
+const createPaymentLink = async (req, res, next) => {
+  try {
+    const { amount, description } = req.body;
+
+    const order = {
+      amount: amount,
+      description: description,
+      orderCode: getRandomOrderCode(1000, 99999),
+      returnUrl: payosConfig.returnURL,
+      cancelUrl: payosConfig.cancelURL,
+    };
+
+    const paymentLink = await payos.createPaymentLink(order);
+
+    res.json({ checkoutUrl: paymentLink.checkoutUrl });
+  } catch (error) {
+    console.error("Error creating payment link:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while creating the payment link.",
+    });
+  }
+};
+
+const payOsReturn = async (req, res, next) => {
   try {
     const payload = req.body;
 
-    await save(payload);
+    const order = await payos.getPaymentLinkInformation(payload.transaction_id);
 
-    if (payload.vnp_ResponseCode === "00") {
-      await updateBalance(payload.user_id, payload.vnp_Amount);
+    const saveData = {
+      user_id: payload.user_id,
+      amount: order.amount,
+      order_code: order.orderCode,
+      description: order.transactions[0].description
+        ? order.transactions[0].description
+        : "",
+      status: order.status,
+    };
+
+    if (payload.status === "PAID") {
+      await updateBalance(payload.user_id, order.amount);
     }
+
+    await save(saveData);
 
     res.status(200).json({
       success: true,
@@ -101,8 +71,7 @@ const vnpay_return = async (req, res, next) => {
     });
   }
 };
-
 module.exports = {
-  vnpay_payment,
-  vnpay_return,
+  createPaymentLink,
+  payOsReturn,
 };

@@ -15,6 +15,7 @@ const {
 const loginController = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
     const response = await login(email, password);
 
     if (typeof response === "string") {
@@ -24,6 +25,7 @@ const loginController = async (req, res, next) => {
     const { user } = response;
     res.json({ user });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -38,6 +40,7 @@ const sendOTPController = async (req, res, next) => {
       }
     }
     const genedOTP = generateOTP();
+    console.log(genedOTP)
     await sendOTP(email, genedOTP.otp);
     res.json({ genedOTP });
   } catch (error) {

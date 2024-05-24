@@ -12,11 +12,13 @@ const {
   updateUserBlockedStatus,
   updateUserForAdmin,
   getAllRoles,
+  getTotalUsers,
 } = require("../../controllers/users.controler");
 
 // const { verifyToken } = require("../../middlewares/validateToken");
 
 router.get("/users", getAllUser);
+router.get("/users/count/total", getTotalUsers);
 router.get("/users/:id", getUserById);
 router.get("/users/roles/all", getAllRoles);
 router.post("/users", saveUser);

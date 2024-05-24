@@ -245,7 +245,17 @@ const updatePost = async (req, res) => {
   }
 };
 
+const getTotalPosts = async (req, res) => {
+  try {
+    const total = await postSevice.countTotal();
+    res.json(total);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
+  getTotalPosts,
   getAllPost,
   getPostById,
   getPostTypeList,

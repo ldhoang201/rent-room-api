@@ -10,8 +10,9 @@ const {
   retrieveBalance,
   updateBlockedStatus,
   updateService,
+  countTotal,
 } = require("../services/user.service");
-const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 const roleService = require("../services/role.service");
 
@@ -81,7 +82,9 @@ const updateUserPassword = async (req, res) => {
   const { id } = req.params;
   const userData = req.body;
   try {
-    await updatePassword(id, userData.password);
+    // Hash the password using SHA-256
+    const hashedPassword = sha256(userData.password);
+    await updatePassword(id, hashedPassword);
     res.json({ message: "User password updated successfully" });
   } catch (error) {
     console.error(error);
@@ -127,7 +130,8 @@ const getUserBalance = async (req, res) => {
 const saveUser = async (req, res) => {
   const userData = req.body;
   try {
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    // Hash the password using SHA-256
+    const hashedPassword = sha256(userData.password);
     const newUser = {
       avatar: userData.avatar,
       user_name: userData.user_name,
@@ -165,7 +169,17 @@ const getAllRoles = async (req, res) => {
   }
 };
 
+const getTotalUsers = async (req, res) => {
+  try {
+    const total = await countTotal();
+    res.json(total);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
+  getTotalUsers,
   getAllUser,
   getUserById,
   updateUser,

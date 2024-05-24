@@ -3,7 +3,9 @@ const {
   update,
   approveRequest,
   retrieveByPost,
+  retrieveByUser,
   retrieveAllForLandlord,
+  cancelRequest,
   remove,
 } = require("../services/viewing-request.service");
 
@@ -54,6 +56,16 @@ const getRequestByPost = async (req, res, next) => {
   }
 };
 
+const getRequestByUser = async (req, res, next) => {
+  try {
+    const { user_id } = req.body;
+    const response = await retrieveByUser(user_id);
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getAllRequestForLandlord = async (req, res, next) => {
   try {
     const { user_id } = req.body;
@@ -67,9 +79,11 @@ const getAllRequestForLandlord = async (req, res, next) => {
 const updateRequest = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { requestDate, timeFrame, type } = req.body;
-    if (type) {
-      await approveRequest(id, type);
+    const { requestDate, timeFrame, type, reason } = req.body;
+    if (type === "approved") {
+      await approveRequest(id);
+    } else if (type === "cancelled") {
+      await cancelRequest(id, reason);
     } else {
       await update(id, requestDate, timeFrame);
     }
@@ -94,6 +108,7 @@ module.exports = {
   getRequestByPost,
   updateRequest,
   deleteRequest,
+  getRequestByUser,
   getAllRequestForLandlord,
   sendMailConfirmRequest,
   sendMailAcceptedRequest,

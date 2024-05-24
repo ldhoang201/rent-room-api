@@ -40,8 +40,8 @@ const updateComment = async (req, res, next) => {
 
 const deleteComment = async (req, res, next) => {
   try {
-    const { commentId } = req.body;
-    await remove(commentId);
+    const { id } = req.params;
+    await remove(id);
     res.json({ message: "delete success" });
   } catch (error) {
     next(error);

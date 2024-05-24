@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {
   getRequestByPost,
+  getRequestByUser,
   getAllRequestForLandlord,
   createRequest,
   updateRequest,
@@ -14,6 +15,7 @@ router.post("/view-request", createRequest);
 router.post("/view-request/send-confirm", sendMailConfirmRequest);
 router.post("/view-request/send-accepted", sendMailAcceptedRequest);
 router.post("/view-request/by-post", getRequestByPost);
+router.post("/view-request/by-user", getRequestByUser);
 router.post("/view-request/for-landlord", getAllRequestForLandlord);
 router.put("/view-request/:id", updateRequest);
 router.put("/view-request/:id", updateRequest);

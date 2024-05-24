@@ -295,6 +295,12 @@ const remove = async (postId) => {
   }
 };
 
+const countTotal = async () => {
+  const result = await knex("posts").count("* as total");
+  const total = result[0].total;
+  return total;
+};
+
 module.exports = {
   retrieveTypeList,
   retrieveById,
@@ -309,4 +315,5 @@ module.exports = {
   update,
   save,
   remove,
+  countTotal,
 };

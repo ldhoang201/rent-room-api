@@ -24,7 +24,14 @@ const retrieveByUserQuery = async (query) => {
           postService.retrieveAll(),
         ]);
         let filteredPosts = allPosts
-          .filter((post) => roomIds.includes(post.room_id))
+          .filter(
+            (post) =>
+              roomIds.includes(post.room_id) &&
+              post.is_approved &&
+              !post.is_blocked &&
+              !post.delete_flag &&
+              post.available
+          )
           .map((post) => {
             const postImages = images.find(
               (img) => img.post_id === post.post_id
@@ -60,7 +67,7 @@ const handleChat = async (message) => {
   const gpt = new G4F();
   try {
     const dbStructContent = fs.readFileSync(
-      "/home/lehoang/graduation-project/server/src/utils/db-struct.txt",
+      "/rental/backend/src/utils/db-struct.txt",
       "utf-8"
     );
     let messages;

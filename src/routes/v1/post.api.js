@@ -14,6 +14,7 @@ const {
   updatePost,
   updatePostBlockedStatus,
   deletePost,
+  getTotalPosts,
 } = require("../../controllers/post.controller");
 
 const { verifyToken } = require("../../middlewares/validateToken");
@@ -23,6 +24,7 @@ const router = express.Router();
 // router.use(verifyToken);
 
 router.get("/posts", getAllPost);
+router.get("/posts/count/total", getTotalPosts);
 router.get("/posts/:id", getPostById);
 router.get("/posts/by-user/:id", getPostByUser);
 router.get("/posts/criteria/latest", getLatestPost);

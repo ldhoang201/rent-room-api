@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const userService = require("../user.service");
 
 const generateToken = (user, expiresIn) => {
@@ -13,7 +13,10 @@ const login = async (email, password) => {
       return "Not Found";
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.hashed_password);
+    const hashedPassword = sha256(password);
+
+    const passwordMatch = hashedPassword === user.hashed_password;
+
     if (!passwordMatch) {
       return "Invalid";
     }
@@ -29,6 +32,7 @@ const login = async (email, password) => {
 
     return { user };
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
@@ -56,7 +60,7 @@ const signUp = async (userData) => {
 const createUser = async (userData) => {
   try {
     const { password, roleId, userName } = userData;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = sha256(password); // Using sha256 for password hashing
     const newUser = {
       ...userData,
       hashed_password: hashedPassword,
@@ -95,3 +99,7 @@ module.exports = {
   refreshAccessToken,
   generateToken,
 };
+
+function sha256(data) {
+  return crypto.createHash("sha256").update(data).digest("hex");
+}

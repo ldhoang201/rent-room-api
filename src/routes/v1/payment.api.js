@@ -1,11 +1,11 @@
 const {
-  vnpay_payment,
-  vnpay_return,
+  createPaymentLink,
+  payOsReturn,
 } = require("../../controllers/payment.controller");
 const express = require("express");
 const router = express.Router();
 
-router.post("/vnpay-payment", vnpay_payment);
-router.post("/vnpay-return", vnpay_return);
+router.post("/create-payment-link", createPaymentLink);
+router.post("/payment-return", payOsReturn);
 
 module.exports = router;

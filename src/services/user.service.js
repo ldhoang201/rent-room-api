@@ -1,5 +1,5 @@
 const knex = require("../config/knex");
-const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { generateToken } = require("./auth/auth.service");
 
@@ -72,6 +72,7 @@ const retrieveService = async (userId) => {
     throw error;
   }
 };
+
 const retrieveBalance = async (userId) => {
   try {
     const balances = await knex("users")
@@ -115,7 +116,8 @@ const updateForAdmin = async (userId, userData) => {
 
 const updatePassword = async (userId, password) => {
   try {
-    const newPassword = await bcrypt.hash(password, 10);
+    // Hash the password using SHA-256
+    const newPassword = sha256(password);
     await knex("users")
       .where({ user_id: userId })
       .update({ hashed_password: newPassword });
@@ -134,33 +136,74 @@ const updateEmail = async (userId, email) => {
   }
 };
 
+const countTotal = async () => {
+  const result = await knex("users").count("* as total");
+  const total = result[0].total;
+  return total;
+};
+
 const updateService = async (
   userId,
   amountToSub,
-  service_id,
-  service_expiry_date
+  newServiceId,
+  newServiceExpiryDate
 ) => {
   try {
-    const service = await knex("services").where({ service_id }).first();
+    const newService = await knex("services")
+      .where({ service_id: newServiceId })
+      .first();
 
-    if (!service) {
+    if (!newService) {
       throw new Error("Không tìm thấy dịch vụ");
     }
 
-    const updatedNumPurchases = service.num_purchases + 1;
+    const user = await knex("users").where({ user_id: userId }).first();
 
+    if (!user) {
+      throw new Error("Không tìm thấy người dùng");
+    }
+
+    const currentServiceId = user.service_id;
+    const currentExpiryDate = user.service_expiry_date;
+
+    let finalExpiryDate = newServiceExpiryDate;
+
+    if (currentServiceId === newServiceId && currentExpiryDate) {
+      const currentDate = new Date();
+      const expiryDate = new Date(currentExpiryDate);
+
+      if (expiryDate > currentDate) {
+        const remainingDaysCurrent = Math.ceil(
+          (expiryDate - currentDate) / (1000 * 60 * 60 * 24)
+        );
+        const newExpiryDate = new Date(newServiceExpiryDate);
+        const remainingDaysNew = Math.ceil(
+          (newExpiryDate - currentDate) / (1000 * 60 * 60 * 24)
+        );
+        const totalRemainingDays = remainingDaysCurrent + remainingDaysNew;
+
+        finalExpiryDate = new Date(
+          currentDate.getTime() + totalRemainingDays * 24 * 60 * 60 * 1000
+        )
+          .toISOString()
+          .split("T")[0];
+      }
+    }
+
+    const updatedNumPurchases = newService.num_purchases + 1;
     await knex("services")
-      .where({ service_id })
+      .where({ service_id: newServiceId })
       .update({ num_purchases: updatedNumPurchases });
 
     await Promise.all([
       knex("users").where({ user_id: userId }).update({
-        service_id: service_id,
-        service_expiry_date: service_expiry_date,
+        service_id: newServiceId,
+        service_expiry_date: finalExpiryDate,
       }),
       updateBalance(userId, -amountToSub),
     ]);
   } catch (error) {
+    console.error("Error updating service:", error);
     throw error;
   }
 };
@@ -183,27 +226,7 @@ const updateBalance = async (userId, amountToUpdate) => {
       .where("user_id", userId)
       .update({ balance: newBalance });
 
-    const admin = await knex("users")
-      .select("user_id", "balance")
-      .where("role_id", 1)
-      .first();
-
-      console.log(admin)
-
-    if (!admin) {
-      throw new Error("Admin not found");
-    }
-
-    const adminCurrentBalance = admin.balance;
-    const adminNewBalance = adminCurrentBalance + amountToUpdate;
-    console.log(amountToUpdate);
-    console.log(adminNewBalance);
-
-    await knex("users")
-      .where("user_id", admin.user_id)
-      .update({ balance: adminNewBalance });
-
-    return adminNewBalance;
+    return newBalance;
   } catch (error) {
     throw error;
   }
@@ -241,3 +264,4 @@ module.exports.updateBlockedStatus = updateBlockedStatus;
 module.exports.updateForAdmin = updateForAdmin;
 module.exports.save = save;
 module.exports.remove = remove;
+module.exports.countTotal = countTotal;
