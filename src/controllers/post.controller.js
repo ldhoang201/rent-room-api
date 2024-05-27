@@ -138,6 +138,8 @@ const createPost = async (req, res) => {
       post_type_id,
       custom_amenities,
       location_codes,
+      is_approved,
+      expired_in,
     } = req.body;
     let customAmenityIds = [];
     if (custom_amenities.length > 0) {
@@ -159,6 +161,8 @@ const createPost = async (req, res) => {
       room_id: room.room_id,
       user_id,
       post_type_id,
+      is_approved,
+      expired_in,
     };
     const roomDetailData = {
       room_type_id,

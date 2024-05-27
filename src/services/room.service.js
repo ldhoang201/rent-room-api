@@ -56,6 +56,19 @@ const retrieveByCriteria = async (criteria) => {
       query = query.where("room_detail.gender", criteria.gender);
     }
 
+    if (criteria.sort_type && criteria.order) {
+      console.log(criteria);
+      const validSortTypes = ["price", "area"];
+      const validOrders = ["asc", "desc"];
+
+      if (
+        validSortTypes.includes(criteria.sort_type) &&
+        validOrders.includes(criteria.order)
+      ) {
+        query = query.orderBy(criteria.sort_type, criteria.order);
+      }
+    }
+
     const filteredRooms = await query;
 
     const roomIds = filteredRooms.map((room) => room.room_id);

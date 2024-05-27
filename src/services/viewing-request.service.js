@@ -86,10 +86,14 @@ const cancelRequest = async (requestId, reason) => {
   }
 };
 
-const update = async (requestId, newRequestDate, newTimeFrame) => {
+const update = async (requestId, newRequestDate, newTimeFrame, newNote) => {
   await knex("viewing_requests")
     .where("request_id", requestId)
-    .update({ request_date: newRequestDate, time_frame: newTimeFrame });
+    .update({
+      request_date: newRequestDate,
+      time_frame: newTimeFrame,
+      note: newNote,
+    });
 };
 
 const remove = async (requestId) => {

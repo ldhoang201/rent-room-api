@@ -221,19 +221,23 @@ const retrieveByCriteria = async (criteria) => {
     const allPosts = await retrievePosts();
     const images = await roomImageService.retrieveAll();
     const roomIds = await roomService.retrieveByCriteria(criteria);
-    let filteredPosts = allPosts
-      .filter((post) => roomIds.includes(post.room_id))
-      .filter(
-        (post) =>
-          !criteria.post_type_id || post.post_type_id == criteria.post_type_id
-      )
-      .map((post) => {
+
+    let filteredPosts = roomIds
+      .map((roomId) => {
+        const post = allPosts.find((post) => post.room_id === roomId);
+        if (!post) return null;
+
         const postImages = images.find((img) => img.post_id === post.post_id);
         return {
           ...post,
           images: postImages ? postImages.images : [],
         };
-      });
+      })
+      .filter((post) => post !== null)
+      .filter(
+        (post) =>
+          !criteria.post_type_id || post.post_type_id == criteria.post_type_id
+      );
 
     if (criteria.sort_type && criteria.sort_type === "latest") {
       filteredPosts.sort((a, b) =>

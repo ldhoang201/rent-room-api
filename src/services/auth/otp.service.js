@@ -99,6 +99,40 @@ const sendAcceptedRequest = async (email, payload) => {
   }
 };
 
+const sendRefuseRequest = async (email, payload) => {
+  try {
+    const postIdLink = payload.postId
+      ? `<a href="localhost:3000/${payload.postId}" style="color: blue; text-decoration: underline;">localhost:3000/${payload.postId}</a>`
+      : "";
+
+    const mailOptions = {
+      from: "rental_app@gmail.com",
+      to: email,
+      subject: "Lịch hẹn xem phòng bị từ chối",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
+          <h2 style="color: #333;">Lịch hẹn của bạn đã bị từ chối</h2>
+          <div style="background-color: #fff; padding: 20px; border-radius: 5px;">
+            <p><strong>Thông tin lịch hẹn:</strong></p>
+            <ul>
+              <li><strong>Ngày:</strong> ${payload.requestDate}</li>
+              <li><strong>Thời gian:</strong> ${payload.timeFrame}</li>
+              <li><strong>Ghi chú:</strong> ${payload.note}</li>
+              <li><strong>Phòng bạn đã đặt lịch:</strong> ${postIdLink}</li>
+            </ul>
+            <p><strong>Lý do từ chối:</strong> ${payload.cancelledReason}</p>
+          </div>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log("Mail sent successfully");
+  } catch (error) {
+    console.error("Error sending mail:", error);
+  }
+};
+
 const verifyOTP = (userOTP, receivedOTP) => {
   try {
     const currentTime = Date.now();
@@ -122,4 +156,5 @@ module.exports = {
   verifyOTP,
   sendViewRequestConfirm,
   sendAcceptedRequest,
+  sendRefuseRequest,
 };

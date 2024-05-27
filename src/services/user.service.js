@@ -250,6 +250,10 @@ const remove = async (userId) => {
   }
 };
 
+function sha256(data) {
+  return crypto.createHash("sha256").update(data).digest("hex");
+}
+
 module.exports.retrieveAll = retrieveAll;
 module.exports.retrieveBalance = retrieveBalance;
 module.exports.retrieveByCriteria = retrieveByCriteria;

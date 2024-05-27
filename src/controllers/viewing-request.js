@@ -12,6 +12,7 @@ const {
 const {
   sendViewRequestConfirm,
   sendAcceptedRequest,
+  sendRefuseRequest,
 } = require("../services/auth/otp.service");
 
 const createRequest = async (req, res, next) => {
@@ -40,6 +41,18 @@ const sendMailAcceptedRequest = async (req, res, next) => {
     const { postId, email, requestDate, timeFrame, note } = req.body;
     let payload = { postId, requestDate, timeFrame, note };
     await sendAcceptedRequest(email, payload);
+    res.json({ success: true, message: "Request sent successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const sendMailRefusedRequest = async (req, res, next) => {
+  try {
+    const { postId, email, requestDate, timeFrame, note, cancelledReason } =
+      req.body;
+    let payload = { postId, requestDate, timeFrame, note, cancelledReason };
+    await sendRefuseRequest(email, payload);
     res.json({ success: true, message: "Request sent successfully" });
   } catch (error) {
     next(error);
@@ -79,13 +92,13 @@ const getAllRequestForLandlord = async (req, res, next) => {
 const updateRequest = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { requestDate, timeFrame, type, reason } = req.body;
+    const { requestDate, timeFrame, type, reason, note } = req.body;
     if (type === "approved") {
       await approveRequest(id);
     } else if (type === "cancelled") {
       await cancelRequest(id, reason);
     } else {
-      await update(id, requestDate, timeFrame);
+      await update(id, requestDate, timeFrame, note);
     }
     res.json({ success: true, message: "Request updated successfully" });
   } catch (error) {
@@ -112,4 +125,5 @@ module.exports = {
   getAllRequestForLandlord,
   sendMailConfirmRequest,
   sendMailAcceptedRequest,
+  sendMailRefusedRequest,
 };

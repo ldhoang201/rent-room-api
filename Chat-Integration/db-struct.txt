@@ -19,6 +19,15 @@ Table room {
   location_codes VARCHAR[]
 }
 
+Table room_detail {
+  room_detail_id INT [pk, increment]
+  room_id INT [not null, ref: - room.room_id]
+  room_type_id INT [not null, ref: - room_type.room_type_id]
+  capacity INT [not null]
+  area INT [not null]
+  gender VARCHAR(50) [not null] //3 types['M','FM','ALL']
+}
+
 Table room_type {
   room_type_id INT [pk, increment]
   post_type_name VARCHAR(50) [not null]
@@ -27,20 +36,6 @@ Table room_type {
 Table post_type {
   post_type_id INT [pk, increment]
   post_type_name VARCHAR(50) [not null]
-}
-
-Table roles {
-  role_id INT [pk, increment]
-  role_name VARCHAR(50) [not null]
-}
-
-Table room_detail {
-  room_detail_id INT [pk, increment]
-  room_id INT [not null, ref: - room.room_id]
-  room_type_id INT [not null, ref: - room_type.room_type_id]
-  capacity INT [not null]
-  area INT [not null]
-  gender VARCHAR(50) [not null] //3 types['M','FM','ALL']
 }
 
 Table amenities {
@@ -72,8 +67,3 @@ Table services {
   prominent_badge boolean [default: false]
 }
 
-
-(Just the info not query)
-Supporter Name:"Le Hoang"
-Phone:"123456789"
-Email:"lehoang@gmail.com"

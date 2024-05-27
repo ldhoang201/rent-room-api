@@ -15,7 +15,7 @@ const save = async (fullName, email, phone, message) => {
 
 const retrieveAll = async () => {
   try {
-    const contacts = await knex("contact").select("*");
+    const contacts = await knex("contacts").select("*");
     return contacts;
   } catch (error) {
     console.error("Error retrieving contacts:", error);

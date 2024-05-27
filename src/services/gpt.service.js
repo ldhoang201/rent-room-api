@@ -26,11 +26,11 @@ const retrieveByUserQuery = async (query) => {
         let filteredPosts = allPosts
           .filter(
             (post) =>
-              roomIds.includes(post.room_id) &&
-              post.is_approved &&
-              !post.is_blocked &&
-              !post.delete_flag &&
-              post.available
+              roomIds.includes(post.room_id)
+              // post.is_approved &&
+              // !post.is_blocked &&
+              // !post.delete_flag &&
+              // post.available
           )
           .map((post) => {
             const postImages = images.find(
