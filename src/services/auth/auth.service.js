@@ -14,6 +14,8 @@ const login = async (email, password) => {
     }
 
     const hashedPassword = sha256(password);
+    console.log(hashedPassword);
+    console.log(user.hashed_password);
 
     const passwordMatch = hashedPassword === user.hashed_password;
 

@@ -6,6 +6,8 @@ const {
   deleteComment,
 } = require("../../controllers/comment.controller");
 
+const {verifyToken} = require("../../middlewares/validateToken")
+
 const router = express.Router();
 
 router.get("/comments/:id", getCommentsByPostId);

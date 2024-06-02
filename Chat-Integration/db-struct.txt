@@ -39,13 +39,13 @@ Table post_type {
 }
 
 Table amenities {
-  amenities_id INT [pk, increment]
+  amenity_id INT [pk, increment]
   amenity_name VARCHAR(255) [not null] //amenity_name store in vietnamese //example:'Điều hòa'
 }
 
 Table room_amenities {
   room_amenities_id INT [pk, increment]
-  amenities_id INT [not null, ref: < amenities.amenity_id]
+  amenity_id INT [not null, ref: < amenities.amenity_id]
   room_id INT [not null, ref: < room.room_id]
 }
 

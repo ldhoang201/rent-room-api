@@ -83,8 +83,7 @@ const updateUserPassword = async (req, res) => {
   const userData = req.body;
   try {
     // Hash the password using SHA-256
-    const hashedPassword = sha256(userData.password);
-    await updatePassword(id, hashedPassword);
+    await updatePassword(id, userData.password);
     res.json({ message: "User password updated successfully" });
   } catch (error) {
     console.error(error);

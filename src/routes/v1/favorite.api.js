@@ -6,7 +6,11 @@ const {
   getFavoriteByUser,
 } = require("../../controllers/favorite.controller");
 
+const { verifyToken } = require("../../middlewares/validateToken");
+
 const router = express.Router();
+
+// router.use(verifyToken);
 
 router.post("/favorites/add", favorPost);
 

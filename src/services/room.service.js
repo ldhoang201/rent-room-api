@@ -22,6 +22,8 @@ const retrieveByCriteria = async (criteria) => {
     if (criteria.min_price !== undefined && criteria.max_price !== undefined) {
       if (criteria.min_price === 0) {
         query = query.where("price", "<=", criteria.max_price * 1000000);
+      } else if (criteria.min_price === criteria.max_price) {
+        query = query.where("price", ">=", criteria.max_price * 1000000);
       } else {
         query = query.whereBetween("price", [
           criteria.min_price * 1000000,
@@ -33,6 +35,8 @@ const retrieveByCriteria = async (criteria) => {
     if (criteria.min_area !== undefined && criteria.max_area !== undefined) {
       if (criteria.min_area === 0) {
         query = query.where("area", "<=", criteria.max_area);
+      } else if (criteria.min_area === criteria.max_area) {
+        query = query.where("area", ">=", criteria.max_area);
       } else {
         query = query.whereBetween("area", [
           criteria.min_area,
@@ -42,6 +46,7 @@ const retrieveByCriteria = async (criteria) => {
     }
 
     if (criteria.location_codes) {
+      console.log(criteria.location_codes);
       for (let i = 0; i < criteria.location_codes.length; i++) {
         const locationCode = criteria.location_codes[i];
         query = query.whereRaw(`location_codes[${i + 1}] = ?`, [locationCode]);

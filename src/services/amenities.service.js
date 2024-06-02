@@ -8,8 +8,8 @@ const retrieveByPostId = async (postId) => {
       )
       .leftJoin(
         "room_amenities",
-        "amenities.amenities_id",
-        "room_amenities.amenities_id"
+        "amenities.amenity_id",
+        "room_amenities.amenity_id"
       )
       .leftJoin("posts", "room_amenities.room_id", "posts.room_id")
       .where("posts.post_id", postId)
@@ -24,7 +24,7 @@ const retrieveAmenityIds = async (amenityNames) => {
   try {
     const ids = await knex("amenities")
       .whereIn("amenity_name", amenityNames)
-      .pluck("amenities_id");
+      .pluck("amenity_id");
     return ids;
   } catch (error) {
     console.error("Error fetching amenity IDs:", error);
@@ -40,8 +40,8 @@ const retrieveAll = async () => {
       )
       .leftJoin(
         "room_amenities",
-        "amenities.amenities_id",
-        "room_amenities.amenities_id"
+        "amenities.amenity_id",
+        "room_amenities.amenity_id"
       )
       .leftJoin("posts", "room_amenities.room_id", "posts.room_id")
       .groupBy("posts.post_id");
@@ -61,7 +61,7 @@ const saveAmenities = async (amenities) => {
     amenities.map(async (amenity) => {
       let [amenity_id] = await knex("amenities")
         .insert({ amenity_name: amenity.amenity_name })
-        .returning("amenities_id");
+        .returning("amenity_id");
       return amenity_id;
     })
   );
@@ -74,7 +74,7 @@ const save = async (amenitiesIds, roomId) => {
     const result = await knex("room_amenities").insert(
       amenitiesIds.map((amenityId) => ({
         room_id: roomId,
-        amenities_id: amenityId,
+        amenity_id: amenityId,
       }))
     );
     return result;

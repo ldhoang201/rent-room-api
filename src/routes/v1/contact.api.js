@@ -5,7 +5,9 @@ const {
   getAllContacts,
 } = require("../../controllers/contact.controller");
 
+const { verifyToken } = require("../../middlewares/permisson");
+
 router.post("/contacts", createContact);
-router.get("/contacts", getAllContacts);
+router.get("/contacts", verifyToken, getAllContacts);
 
 module.exports = router;

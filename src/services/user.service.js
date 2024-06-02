@@ -118,6 +118,7 @@ const updatePassword = async (userId, password) => {
   try {
     // Hash the password using SHA-256
     const newPassword = sha256(password);
+    console.log(newPassword);
     await knex("users")
       .where({ user_id: userId })
       .update({ hashed_password: newPassword });

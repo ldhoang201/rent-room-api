@@ -144,14 +144,13 @@ const createPost = async (req, res) => {
     let customAmenityIds = [];
     if (custom_amenities.length > 0) {
       customAmenityIds = await amenitiesService.saveAmenities(custom_amenities);
-      customAmenityIds = customAmenityIds.map((obj) => obj.amenities_id);
+      customAmenityIds = customAmenityIds.map((obj) => obj.amenity_id);
     }
     const allAmenitiesIds = [...amenitiesIds, ...customAmenityIds];
     const post_id = uuidv4();
     const roomData = {
       title,
       description,
-      price,
       location,
       location_codes,
     };
@@ -168,6 +167,7 @@ const createPost = async (req, res) => {
       room_type_id,
       capacity,
       area,
+      price,
       gender,
       room_id: room.room_id,
     };
@@ -227,11 +227,17 @@ const updatePost = async (req, res) => {
       room_id,
       title,
       description,
-      price,
       location,
     };
     const postData = { room_id, user_id, post_type_id };
-    const roomDetailData = { room_type_id, capacity, area, gender, room_id };
+    const roomDetailData = {
+      room_type_id,
+      price,
+      capacity,
+      area,
+      gender,
+      room_id,
+    };
 
     const promises = [
       roomService.update(roomData, room_id),

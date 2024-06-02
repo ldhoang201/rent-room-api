@@ -2,7 +2,7 @@ const knex = require("../config/knex");
 
 const save = async (fullName, email, phone, message) => {
   try {
-    await knex("contact").insert({
+    await knex("contacts").insert({
       full_name: fullName,
       email: email,
       phone: phone,

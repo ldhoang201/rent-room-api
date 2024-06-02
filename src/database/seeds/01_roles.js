@@ -5,8 +5,8 @@ exports.seed = function (knex) {
     .then(function () {
       return knex("roles").insert([
         { role_name: "admin" },
-        { role_name: "landlord" },
-        { role_name: "tenant" },
+        { role_name: "Chủ trọ" },
+        { role_name: "Người thuê" },
       ]);
     });
 };

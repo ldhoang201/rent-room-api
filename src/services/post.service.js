@@ -23,6 +23,7 @@ const retrievePosts = async () => {
         "room_detail.capacity",
         "room_detail.area",
         "room_detail.gender",
+        "room_detail.price",
         "users.user_name",
         "users.avatar",
         "users.phone",
@@ -43,6 +44,7 @@ const retrievePosts = async () => {
           // .where("posts.is_blocked", false)
           // .where("posts.is_approved", true)
           .groupBy(
+            "room_detail.price",
             "room_detail.area",
             "room_detail.capacity",
             "room_detail.gender",
@@ -115,10 +117,11 @@ const retrieveLatest = async () => {
         "posts.user_id",
         "posts.created_at",
         "room.title",
-        "room.price"
+        "room_detail.price"
       )
       .modify(function (qb) {
         qb.leftJoin("room", "posts.room_id", "room.room_id")
+          .leftJoin("room_detail", "posts.room_id", "room_detail.room_id")
           // .where("posts.delete_flag", false)
           // .where("posts.available", true)
           // .where("posts.is_blocked", false)
@@ -128,7 +131,8 @@ const retrieveLatest = async () => {
       });
     const images = await roomImageService.retrieveAll();
     posts.forEach((post) => {
-      post.images = images.find((img) => img.post_id === post.post_id).images;
+      const postImages = images.find((img) => img.post_id === post.post_id);
+      post.images = postImages ? postImages.images : [];
     });
     return posts;
   } catch (error) {
@@ -145,10 +149,11 @@ const retrieveHottest = async () => {
         "posts.created_at",
         "users.service_id",
         "room.title",
-        "room.price"
+        "room_detail.price"
       )
       .modify(function (qb) {
         qb.leftJoin("room", "posts.room_id", "room.room_id")
+          .leftJoin("room_detail", "posts.room_id", "room_detail.room_id")
           .leftJoin("users", "posts.user_id", "users.user_id")
           // .where("posts.delete_flag", false)
           // .where("posts.available", true)
@@ -159,7 +164,8 @@ const retrieveHottest = async () => {
       });
     const images = await roomImageService.retrieveAll();
     posts.forEach((post) => {
-      post.images = images.find((img) => img.post_id === post.post_id).images;
+      const postImages = images.find((img) => img.post_id === post.post_id);
+      post.images = postImages ? postImages.images : []; // Thêm check để tránh lỗi nếu không có ảnh nào khớp
     });
     return posts;
   } catch (error) {
@@ -244,6 +250,7 @@ const retrieveByCriteria = async (criteria) => {
         moment(b.created_at).diff(moment(a.created_at))
       );
     }
+    filteredPosts.sort((a, b) => a.service_id - b.service_id);
 
     return filteredPosts;
   } catch (error) {
