@@ -92,14 +92,21 @@ const getAllRequestForLandlord = async (req, res, next) => {
 const updateRequest = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { requestDate, timeFrame, type, reason, note } = req.body;
-    if (type === "approved") {
-      await approveRequest(id);
-    } else if (type === "cancelled") {
-      await cancelRequest(id, reason);
-    } else {
-      await update(id, requestDate, timeFrame, note);
+    const { postId, requestDate, userId, timeFrame, type, reason, note } =
+      req.body;
+
+    switch (type) {
+      case "approved":
+        await approveRequest(id);
+        break;
+      case "cancelled":
+        await cancelRequest(id, reason);
+        break;
+      default:
+        await remove(id);
+        await save(postId, userId, requestDate, timeFrame, note);
     }
+
     res.json({ success: true, message: "Request updated successfully" });
   } catch (error) {
     next(error);

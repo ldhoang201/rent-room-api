@@ -16,6 +16,20 @@ const getPostTypeList = async (req, res) => {
   }
 };
 
+const updatePostRange = async (req, res) => {
+  const { id } = req.params;
+  const { dateRange, timeFrames } = req.body;
+
+  try {
+    await postSevice.updateRange(id, dateRange, timeFrames);
+    res
+      .status(200)
+      .json({ message: `Post with ID ${id} updated successfully.` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const getAllPost = async (req, res) => {
   try {
     const posts = await postSevice.retrieveAll();
@@ -280,4 +294,5 @@ module.exports = {
   getPostByArea,
   updatePost,
   deletePost,
+  updatePostRange,
 };

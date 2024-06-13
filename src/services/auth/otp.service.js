@@ -21,8 +21,52 @@ const sendOTP = async (email, otp) => {
       from: "rental_app@gmail.com",
       to: email,
       subject: "Xác thực Email",
-      // text: `Your OTP is: ${otp}`,
-      html: `<p>Mã xác thực của bạn là: <strong>${otp}</strong></p>`,
+      html: `
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              margin: 0;
+              padding: 0;
+              background-color: #f4f4f4;
+            }
+            .email-container {
+              max-width: 600px;
+              margin: 20px auto;
+              padding: 20px;
+              background-color: #ffffff;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              border-radius: 10px;
+              text-align: center;
+            }
+            .email-header {
+              font-size: 24px;
+              color: #333333;
+              margin-bottom: 10px;
+            }
+            .email-body {
+              font-size: 16px;
+              color: #555555;
+            }
+            .otp-code {
+              font-size: 20px;
+              font-weight: bold;
+              color: #d9534f;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="email-header">Xác thực Email</div>
+            <div class="email-body">
+              <p>Mã xác thực của bạn là: <span class="otp-code">${otp}</span></p>
+            </div>
+          </div>
+        </body>
+      </html>
+      `,
     };
 
     await transporter.sendMail(mailOptions);

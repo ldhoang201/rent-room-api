@@ -222,6 +222,29 @@ const updateBlockedStatus = async (postId, isBlocked) => {
   }
 };
 
+const updateRange = async (postId, dateRange = null, timeFrames = null) => {
+  try {
+    const updateData = {};
+    if (dateRange !== null) {
+      updateData.date_range = dateRange;
+    }
+    if (timeFrames !== null) {
+      updateData.time_frame = timeFrames;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      throw new Error("Nothing to update");
+    }
+
+    await knex("posts").where({ post_id: postId }).update(updateData);
+
+    console.log(`Post with ID ${postId} updated successfully.`);
+  } catch (error) {
+    console.error(`Error updating post with ID ${postId}:`, error);
+    throw error;
+  }
+};
+
 const retrieveByCriteria = async (criteria) => {
   try {
     const allPosts = await retrievePosts();
@@ -250,7 +273,13 @@ const retrieveByCriteria = async (criteria) => {
         moment(b.created_at).diff(moment(a.created_at))
       );
     }
-    filteredPosts.sort((a, b) => a.service_id - b.service_id);
+    if (
+      criteria.sort_type !== "latest" &&
+      criteria.sort_type !== "price" &&
+      criteria.sort_type !== "area"
+    ) {
+      filteredPosts.sort((a, b) => a.service_id - b.service_id);
+    }
 
     return filteredPosts;
   } catch (error) {
@@ -323,6 +352,7 @@ module.exports = {
   retrieveByArea,
   updateApprovedStatus,
   updateBlockedStatus,
+  updateRange,
   update,
   save,
   remove,
