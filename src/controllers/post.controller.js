@@ -155,6 +155,7 @@ const createPost = async (req, res) => {
       is_approved,
       expired_in,
     } = req.body;
+
     let customAmenityIds = [];
     if (custom_amenities.length > 0) {
       customAmenityIds = await amenitiesService.saveAmenities(custom_amenities);
@@ -232,7 +233,7 @@ const updatePost = async (req, res) => {
     let customAmenityIds = [];
     if (custom_amenities.length > 0) {
       customAmenityIds = await amenitiesService.saveAmenities(custom_amenities);
-      customAmenityIds = customAmenityIds.map((obj) => obj.amenities_id);
+      customAmenityIds = customAmenityIds.map((obj) => obj.amenity_id);
     }
 
     const allAmenitiesIds = [...amenitiesIds, ...customAmenityIds];

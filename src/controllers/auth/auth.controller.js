@@ -39,6 +39,7 @@ const sendOTPController = async (req, res, next) => {
         res.json({ message: "Email existed on another user!" });
       }
     }
+    console.log(email)
     const genedOTP = generateOTP();
     console.log(genedOTP)
     await sendOTP(email, genedOTP.otp);
@@ -54,7 +55,7 @@ const signUpController = async (req, res, next) => {
 
     const isOTPCorrect = verifyOTP(userOTP, genedOTP);
     if (!isOTPCorrect) {
-      return res.json({ message: "OTP does not match" });
+      return res.json({ message: "Mã OTP không chính xác hoặc đã hết hạn!" });
     }
 
     const response = await signUp(userData);
@@ -75,7 +76,7 @@ const verifyOTPController = async (req, res, next) => {
     const { userOTP, genedOTP } = req.body;
     const isOTPCorrect = verifyOTP(userOTP, genedOTP);
     if (!isOTPCorrect) {
-      return res.json({ message: "OTP does not match" });
+      return res.json({ message: "Mã OTP không chính xác hoặc đã hết hạn!" });
     }
     return res.json({ message: "OTP matched" });
   } catch (error) {

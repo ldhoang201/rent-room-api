@@ -79,7 +79,7 @@ const sendOTP = async (email, otp) => {
 const sendViewRequestConfirm = async (email, payload) => {
   try {
     const postIdLink = payload.postId
-      ? `<a href="localhost:3000/${payload.postId}" style="color: blue; text-decoration: underline;">localhost:3000/${payload.postId}</a>`
+      ? `<a href="${process.env.CLIENT_URL}/${payload.postId}" style="color: blue; text-decoration: underline;">${process.env.CLIENT_URL}/${payload.postId}</a>`
       : "";
 
     const mailOptions = {
@@ -92,9 +92,15 @@ const sendViewRequestConfirm = async (email, payload) => {
           <div style="background-color: #fff; padding: 20px; border-radius: 5px;">
             <p style="margin-bottom: 10px;"><strong>Thông tin lịch hẹn:</strong></p>
             <ul style="list-style-type: none; padding-left: 0;">
-              <li style="margin-bottom: 10px;"><strong>Ngày:</strong> ${payload.requestDate}</li>
-              <li style="margin-bottom: 10px;"><strong>Thời gian:</strong> ${payload.timeFrame}</li>
-              <li style="margin-bottom: 10px;"><strong>Ghi chú:</strong> ${payload.note}</li>
+              <li style="margin-bottom: 10px;"><strong>Ngày:</strong> ${
+                payload.requestDate
+              }</li>
+              <li style="margin-bottom: 10px;"><strong>Thời gian:</strong> ${
+                payload.timeFrame
+              }</li>
+              <li style="margin-bottom: 10px;"><strong>Ghi chú:</strong> ${
+                payload.note ? payload.note : ""
+              }</li>
               <li style="margin-bottom: 10px;"><strong>Nếu muốn thay đổi lịch hẹn, xin vui lòng truy cập:</strong> ${postIdLink}</li>
             </ul>
             <p style="margin-top: 20px; font-style: italic;">Vui lòng chờ chủ phòng duyệt yêu cầu của bạn!</p>
@@ -113,7 +119,7 @@ const sendViewRequestConfirm = async (email, payload) => {
 const sendAcceptedRequest = async (email, payload) => {
   try {
     const postIdLink = payload.postId
-      ? `<a href="localhost:3000/${payload.postId}" style="color: blue; text-decoration: underline;">localhost:3000/${payload.postId}</a>`
+      ? `<a href="${process.env.CLIENT_URL}/${payload.postId}" style="color: blue; text-decoration: underline;">${process.env.CLIENT_URL}/${payload.postId}</a>`
       : "";
 
     const mailOptions = {
@@ -128,7 +134,9 @@ const sendAcceptedRequest = async (email, payload) => {
             <ul>
               <li><strong>Ngày:</strong> ${payload.requestDate}</li>
               <li><strong>Thời gian:</strong> ${payload.timeFrame}</li>
-              <li><strong>Ghi chú:</strong> ${payload.note}</li>
+              <li><strong>Ghi chú:</strong> ${
+                payload.note ? payload.note : ""
+              }</li>
               <li><strong>Phòng bạn đã đặt lịch:</strong> ${postIdLink}</li>
             </ul>
           </div>
@@ -146,7 +154,7 @@ const sendAcceptedRequest = async (email, payload) => {
 const sendRefuseRequest = async (email, payload) => {
   try {
     const postIdLink = payload.postId
-      ? `<a href="localhost:3000/${payload.postId}" style="color: blue; text-decoration: underline;">localhost:3000/${payload.postId}</a>`
+      ? `<a href="${process.env.CLIENT_URL}/${payload.postId}" style="color: blue; text-decoration: underline;">${process.env.CLIENT_URL}/${payload.postId}</a>`
       : "";
 
     const mailOptions = {
@@ -161,7 +169,9 @@ const sendRefuseRequest = async (email, payload) => {
             <ul>
               <li><strong>Ngày:</strong> ${payload.requestDate}</li>
               <li><strong>Thời gian:</strong> ${payload.timeFrame}</li>
-              <li><strong>Ghi chú:</strong> ${payload.note}</li>
+              <li><strong>Ghi chú:</strong> ${
+                payload.note ? payload.note : ""
+              }</li>
               <li><strong>Phòng bạn đã đặt lịch:</strong> ${postIdLink}</li>
             </ul>
             <p><strong>Lý do từ chối:</strong> ${payload.cancelledReason}</p>

@@ -43,7 +43,6 @@ const payOsReturn = async (req, res, next) => {
 
     const order = await payos.getPaymentLinkInformation(payload.transaction_id);
 
-    console.log(order);
     const saveData = {
       user_id: payload.user_id,
       amount: order.amount,

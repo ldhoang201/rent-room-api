@@ -20,8 +20,8 @@ const retrieveByCriteria = async (criteria) => {
       );
 
     if (criteria.min_price !== undefined && criteria.max_price !== undefined) {
-      if (criteria.min_price === 0) {
-        query = query.where("price", "<=", criteria.max_price * 1000000);
+      if (parseInt(criteria.min_price) === 0) {
+        query = query.where("price", "<", criteria.max_price * 1000000);
       } else if (criteria.min_price === criteria.max_price) {
         query = query.where("price", ">=", criteria.max_price * 1000000);
       } else {
@@ -33,8 +33,8 @@ const retrieveByCriteria = async (criteria) => {
     }
 
     if (criteria.min_area !== undefined && criteria.max_area !== undefined) {
-      if (criteria.min_area === 0) {
-        query = query.where("area", "<=", criteria.max_area);
+      if (parseInt(criteria.min_area) === 0) {
+        query = query.where("area", "<", criteria.max_area);
       } else if (criteria.min_area === criteria.max_area) {
         query = query.where("area", ">=", criteria.max_area);
       } else {
